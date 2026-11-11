@@ -1,0 +1,557 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RL 1: Intro and MDPs</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css?v=202609281015">
+<link rel="stylesheet" href="assets/deck.css?v=202609281015">
+<script defer src="assets/katex/katex.min.js?v=202609281015"></script>
+<script defer src="assets/katex/auto-render.min.js?v=202609281015"></script>
+<script defer src="assets/deck.js?v=202609281015"></script>
+<script defer src="assets/rl-common.js?v=202609281015"></script>
+<script defer src="assets/mindmap.js?v=202609281015"></script>
+<script defer src="assets/l1.js?v=202609281015"></script>
+</head>
+<body>
+<div class="deck" data-footer="CCE5502 · Lecture 1 · Introduction to RL &amp; MDPs">
+
+<!-- ============================================================ TITLE -->
+<section class="title" data-section="Opening">
+  <h1>Introduction to<br>Reinforcement Learning</h1>
+  <p class="subtitle">&amp; Markov Decision Processes</p>
+  <p class="who">Dr Leander Grech<br>Department of Communications and Computer Engineering<br>CCE5502 – Fundamentals of AI and ML</p>
+  <p class="who" style="margin-top:40px;font-size:16px;opacity:.6">Press <b>?</b> for keys · <b>N</b> notes · <b>P</b> presenter window</p>
+</section>
+
+<section data-time="2 min" class="mm">
+  <h2>Lecture 1 at a glance</h2>
+  <div data-widget="mindmap"><script type="application/json">{"center": ["Lecture 1", "Intro to RL & MDPs"], "branches": [{"label": "What is RL?", "leaves": [["SL vs UL vs RL", "Three ways to learn"], ["Why RL is different", "What makes RL different", 5], ["RL in the real world", "RL in the real world"], ["Agent–environment loop", "agent–environment loop"], ["Rewards", "Rewards"], ["Sequential decisions", "Sequential decision making"]]}, {"label": "States", "leaves": [["History & state", "History and state"], ["Observability", "Environment observability"], ["Markov property", "The Markov property"], ["Markov quiz", "Quick check: Markov or not?", 10]]}, {"label": "Markov chains & MRPs", "leaves": [["Markov chain", "Markov process (Markov chain)"], ["Transition matrix", "its transition matrix"], ["Markov reward process", "Markov reward process"], ["Return & discount γ", "Return and discount"], ["Value function v(s)", "Value function"]], "dark": true}, {"label": "Bellman equation", "leaves": [["Sampling returns", "Estimating"], ["Student MRP values", "State values of the Student MRP"], ["v = R + γPv", "The Bellman equation for MRPs"], ["Matrix solve", "Bellman equation in matrix form"], ["Iterative solution", "just apply the Bellman equation"]]}, {"label": "MDPs & policies", "leaves": [["MDP ⟨S, A, P, R, γ⟩", "Markov decision process"], ["Student MDP", "Example: the Student MDP"], ["Policies π(a|s)", "Policies"], ["Grid world", "A simple MDP: Grid World"], ["vπ and qπ", "Value functions of an MDP"]]}, {"label": "Optimality", "leaves": [["Bellman expectation", "Bellman expectation equations"], ["Backup diagrams", "Backup diagrams"], ["Optimal v* and q*", "Optimal value functions"], ["Optimal policy π*", "Optimal policy", 1], ["Bellman optimality", "Bellman optimality equations"]], "dark": true}]}</script></div>
+</section>
+
+<section data-time="2 min">
+  <h2>Our 4 hours of RL</h2>
+  <div class="row">
+    <div class="col box blue">
+      <h3>Lecture 1 — today (≈2 h)</h3>
+      <ul class="small">
+        <li>What is RL? Agent, environment, reward</li>
+        <li>States, observability, the Markov property</li>
+        <li>Markov chains → reward processes → <b>MDPs</b></li>
+        <li>Return, discounting, value functions</li>
+        <li><b>Bellman equations</b> (expectation &amp; optimality)</li>
+      </ul>
+    </div>
+    <div class="col box orange">
+      <h3>Lecture 2 (≈2 h)</h3>
+      <ul class="small">
+        <li>Planning: policy / value iteration</li>
+        <li>Learning from experience: Monte-Carlo vs TD</li>
+        <li>SARSA &amp; Q-learning</li>
+        <li>Deep Q-Networks (DQN) + CartPole in code</li>
+        <li>Policy gradients &amp; PPO (brief) · reward design</li>
+      </ul>
+    </div>
+  </div>
+  <div class="box green" style="margin-top:18px"><p class="small" style="margin:0"><b>Assignment:</b> you will train, break and <i>explain</i> real RL agents. Lecture 2 ends with everything you need to start.</p></div>
+</section>
+
+<section data-time="1 min">
+  <h2>Resources</h2>
+  <ul>
+    <li><b>Sutton &amp; Barto</b>, <i>Reinforcement Learning: An Introduction</i>, 2nd ed., 2018 — free at <a href="http://incompleteideas.net/book/the-book-2nd.html">incompleteideas.net/book</a> <span class="muted">(Ch. 3–6 for these lectures)</span></li>
+    <li><b>Szepesvári</b>, <i>Algorithms for Reinforcement Learning</i>, 2010 — concise &amp; mathematical</li>
+    <li><b>David Silver</b>, UCL RL course (2015) — lectures 1–6; many examples today come from it</li>
+    <li><b>OpenAI Spinning Up</b> — practical intro to deep RL (DQN, PPO…)</li>
+    <li><b>Gymnasium</b> &amp; <b>Stable-Baselines3</b> docs — the tools we use in code</li>
+  </ul>
+</section>
+
+<!-- ============================================================ WHAT IS RL -->
+<section class="section" data-section="What is RL?">
+  <div class="kicker">Part 1</div>
+  <h1>What is Reinforcement Learning?</h1>
+  <p>Learning what to do — how to map situations to actions — so as to maximise a numerical reward signal.</p>
+</section>
+
+<section data-time="4 min">
+  <h2>Three ways to learn from data</h2>
+  <div data-widget="paradigms" class="widget"></div>
+</section>
+
+<section data-time="2 min">
+  <h2>What makes RL different?</h2>
+  <div class="why-grid">
+    <div class="why-card fragment" style="--k:#1f5fae">
+      <div class="why-head"><span class="why-n">1</span><span class="why-ic">🎯</span><h3>Only a reward, no teacher</h3></div>
+      <svg viewBox="0 0 300 64" class="why-svg">
+        <rect x="6" y="10" width="120" height="40" rx="10" fill="#eceef1"/><text x="66" y="35" text-anchor="middle" font-size="15" fill="#5b6475">“it's a cat”</text>
+        <text x="150" y="36" text-anchor="middle" font-size="15" fill="#5b6475">vs</text>
+        <rect x="174" y="10" width="120" height="40" rx="10" fill="#1f5fae"/><text x="234" y="36" text-anchor="middle" font-size="19" font-weight="700" fill="#fff">+1</text>
+      </svg>
+      <p class="why-vs"><span>Supervised:</span> told the correct answer.</p>
+      <p class="why-rl"><span>RL:</span> told only how good the outcome was, a single number.</p>
+    </div>
+    <div class="why-card fragment" style="--k:#0b7285">
+      <div class="why-head"><span class="why-n">2</span><span class="why-ic">⏳</span><h3>Feedback is delayed</h3></div>
+      <svg viewBox="0 0 300 64" class="why-svg">
+        <line x1="14" y1="40" x2="250" y2="40" stroke="#b9bec8" stroke-width="2"/>
+        <g fill="#0b7285"><circle cx="20" cy="40" r="6"/><circle cx="52" cy="40" r="6"/><circle cx="84" cy="40" r="6"/><circle cx="116" cy="40" r="6"/><circle cx="148" cy="40" r="6"/><circle cx="180" cy="40" r="6"/><circle cx="212" cy="40" r="6"/></g>
+        <text x="272" y="47" text-anchor="middle" font-size="26" fill="#e8a100">★</text>
+        <path d="M262 26 C 200 -4, 120 -4, 60 28" fill="none" stroke="#d9480f" stroke-width="2" stroke-dasharray="4 4"/>
+        <text x="150" y="14" text-anchor="middle" font-size="15" font-weight="700" fill="#d9480f">which move earned it?</text>
+      </svg>
+      <p class="why-vs"><span>Supervised:</span> feedback on every example, immediately.</p>
+      <p class="why-rl"><span>RL:</span> win or lose at the end: which of my 50 moves deserves the credit?</p>
+    </div>
+    <div class="why-card fragment" style="--k:#2b8a3e">
+      <div class="why-head"><span class="why-n">3</span><span class="why-ic">🔗</span><h3>Data comes in a sequence</h3></div>
+      <svg viewBox="0 0 300 64" class="why-svg">
+        <g font-size="14" font-weight="700" text-anchor="middle">
+          <rect x="8" y="16" width="52" height="34" rx="7" fill="#2b8a3e"/><text x="34" y="38" fill="#fff">S₁</text>
+          <rect x="88" y="16" width="52" height="34" rx="7" fill="#2b8a3e" opacity=".8"/><text x="114" y="38" fill="#fff">S₂</text>
+          <rect x="168" y="16" width="52" height="34" rx="7" fill="#2b8a3e" opacity=".6"/><text x="194" y="38" fill="#fff">S₃</text>
+          <rect x="248" y="16" width="44" height="34" rx="7" fill="#2b8a3e" opacity=".4"/><text x="270" y="38" fill="#fff">…</text>
+        </g>
+        <g stroke="#2b8a3e" stroke-width="2.5" fill="#2b8a3e"><line x1="62" y1="33" x2="82" y2="33"/><line x1="142" y1="33" x2="162" y2="33"/><line x1="222" y1="33" x2="242" y2="33"/></g>
+      </svg>
+      <p class="why-vs"><span>Supervised:</span> shuffled, independent examples (i.i.d.).</p>
+      <p class="why-rl"><span>RL:</span> each observation depends on the one before. Time matters.</p>
+    </div>
+    <div class="why-card wide fragment" style="--k:#d9480f">
+      <div class="why-head"><span class="why-n">4</span><span class="why-ic">🕹️</span><h3>The agent's actions shape its own data</h3></div>
+      <svg viewBox="0 0 520 64" class="why-svg">
+        <circle cx="40" cy="32" r="14" fill="#d9480f"/><text x="40" y="37" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">you</text>
+        <path d="M56 26 C 110 6, 170 6, 220 14" fill="none" stroke="#d9480f" stroke-width="3"/><text x="232" y="19" font-size="15" fill="#1d2433">the path you tried: you get data ✓</text>
+        <path d="M56 38 C 110 58, 170 58, 220 50" fill="none" stroke="#b9bec8" stroke-width="3" stroke-dasharray="6 6"/><text x="232" y="55" font-size="15" fill="#8a8f99">never explored: no data (maybe better?)</text>
+      </svg>
+      <p class="why-rl"><span>RL:</span> what you do decides what you get to see next. Explore badly and you never discover the good parts. This is the <b>exploration vs exploitation</b> dilemma.</p>
+    </div>
+    <div class="why-card wide fragment" style="--k:#6741d9">
+      <div class="why-head"><span class="why-n">5</span><span class="why-ic">🗺️</span><h3>No rule book: learn by interacting</h3></div>
+      <svg viewBox="0 0 520 64" class="why-svg">
+        <rect x="30" y="14" width="120" height="36" rx="10" fill="#6741d9"/><text x="90" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="#fff">agent</text>
+        <rect x="370" y="14" width="120" height="36" rx="10" fill="#eceef1"/><text x="430" y="37" text-anchor="middle" font-size="15" font-weight="700" fill="#1d2433">world = ?</text>
+        <path d="M154 24 H 364" stroke="#6741d9" stroke-width="2.5"/><path d="M364 24 l -9 -5 v 10 z" fill="#6741d9"/><text x="260" y="17" text-anchor="middle" font-size="13" fill="#6741d9">try an action</text>
+        <path d="M368 42 H 158" stroke="#2b8a3e" stroke-width="2.5"/><path d="M158 42 l 9 -5 v 10 z" fill="#2b8a3e"/><text x="260" y="60" text-anchor="middle" font-size="13" fill="#2b8a3e">see what happens, get a reward</text>
+      </svg>
+      <p class="why-rl"><span>RL:</span> nobody gives the agent the physics or the rules of the game. It must learn them implicitly, by trial and error.</p>
+    </div>
+  </div>
+  <div class="why-take fragment">RL = learning <b>to act</b>, by <b>trial and error</b>, from <b>delayed, evaluative</b> feedback.</div>
+</section>
+
+<section data-time="1 min">
+  <h2>A familiar example: training a cat</h2>
+  <div class="cards c4" style="margin-top:20px">
+    <div class="card"><div class="big">🐱</div><h3>Agent</h3><p>The cat. Decides what to do.</p></div>
+    <div class="card fragment"><div class="big">🛋️</div><h3>State</h3><p>Sitting on the sofa; you are calling "come here!"</p></div>
+    <div class="card fragment"><div class="big">🚶</div><h3>Action</h3><p><b>walk</b> to you, or <b>keep sitting</b></p></div>
+    <div class="card fragment"><div class="big">🍗</div><h3>Reward</h3><p>Walk → treat (+). Sit → stays hungry (0).</p></div>
+  </div>
+  <p class="fragment" style="margin-top:30px">Nobody tells the cat the "correct" action. It <b>tries things</b> and repeats what got rewarded. Over many trials the <b>policy</b> "when called → walk over" emerges.</p>
+</section>
+
+<section data-time="5 min">
+  <h2>RL in the real world</h2>
+  <div class="cards c3 rw" data-widget="realworld">
+    <div class="card"><div class="media" data-anim="breakout"></div><h3>🎮 Atari (2015)</h3><p>DQN learns 49 games from raw pixels; human-level on many. <span class="muted">(Mnih et al., Nature)</span></p><div class="credit">Animation drawn for this slide</div></div>
+    <div class="card"><div class="media"><img src="assets/img/go.jpg" alt="Go board with stones"></div><h3>♟️ Go, chess (2016–17)</h3><p>AlphaGo / AlphaZero: self-play RL + search beats world champions.</p><div class="credit">Photo: Dietmar Rabich, CC BY-SA 4.0</div></div>
+    <div class="card"><div class="media"><video src="assets/img/anymal.webm" muted loop playsinline preload="auto"></video></div><h3>🦿 Legged robots</h3><p>Locomotion learned in simulation, transferred to real robots such as ANYmal (sim-to-real).</p><div class="credit">Video: Auledas, CC BY-SA 4.0</div></div>
+    <div class="card"><div class="media"><img src="assets/img/tcv.jpg" alt="TCV tokamak, Lausanne"></div><h3>⚛️ Fusion plasma (2022)</h3><p>An RL agent controls the magnetic coils of the TCV tokamak (pictured). <span class="muted">(Degrave et al., Nature)</span></p><div class="credit">Photo: CRPP-EPFL, CC BY-SA 2.5</div></div>
+    <div class="card"><div class="media"><img src="assets/img/lhc.jpg" alt="LHC tunnel at CERN"></div><h3>🔬 Particle accelerators</h3><p>Beam steering &amp; tuning at CERN and other facilities with RL agents.</p><div class="credit">Photo: Maximilien Brice (CERN), CC BY-SA 3.0</div></div>
+    <div class="card"><div class="media chat" data-anim="chat"></div><h3>💬 Large language models</h3><p>RLHF: human ratings become the reward. RL on verifiable rewards trains “reasoning” models.</p><div class="credit">Animation drawn for this slide</div></div>
+  </div>
+</section>
+
+<section data-time="4 min">
+  <h2>The agent–environment loop</h2>
+  <div data-widget="aeloop" class="widget"></div>
+  <p class="small" style="margin-top:4px">At each step $t$: agent observes $\est{S_t}$, takes $\est{A_t}$; environment returns reward $\rew{R_{t+1}}$ and next state $\nxt{S_{t+1}}$. &nbsp;Trajectory: $S_0, A_0, R_1, S_1, A_1, R_2, \dots$</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Rewards</h2>
+  <div class="def"><div class="lbl">Reward</div><p>A reward $R_t$ is a <b>scalar</b> feedback signal: how well is the agent doing at step $t$?</p></div>
+  <div class="def" style="border-color:var(--orange);background:var(--orange-soft)"><div class="lbl" style="color:var(--orange)">Reward hypothesis</div><p>All goals can be described by the maximisation of <b>expected cumulative reward</b>.</p></div>
+  <div class="row" style="margin-top:10px">
+    <ul class="col small">
+      <li>Win a game: +1 win, −1 loss</li>
+      <li>Balance an inverted pendulum: +1 per step upright</li>
+      <li>Reach design luminosity in a collider: + luminosity</li>
+    </ul>
+    <div class="col box red fragment"><p class="small"><b>Warning:</b> the agent optimises <i>exactly</i> what you reward — not what you meant. We return to <b>reward hacking</b> in Lecture 2.</p></div>
+  </div>
+</section>
+
+<section data-time="4 min">
+  <h2>Sequential decision making</h2>
+  <div class="row">
+    <div class="col" style="flex:0 0 330px">
+      <ul class="small">
+        <li>Goal: select actions to maximise <b>total future</b> reward</li>
+        <li>Actions have long-term consequences</li>
+        <li>Reward may be <b>delayed</b></li>
+        <li>It may be better to <b>sacrifice immediate reward</b> for more long-term reward (investments, blocking an opponent)</li>
+      </ul>
+    </div>
+    <div class="col" data-widget="delayed"></div>
+  </div>
+</section>
+
+<section data-optional="1" data-time="2 min">
+  <h2>History and state</h2>
+  <p>The <b>history</b> is everything observed so far:</p>
+  <div class="eq">$H_t = O_1, R_1, A_1, \; O_2, R_2, A_2, \; \dots, \; A_{t-1}, O_t, R_t$</div>
+  <p>The <b>state</b> is a summary of history used to decide what happens next: $\;S_t = f(H_t)$</p>
+  <div class="cards c3" style="margin-top:14px">
+    <div class="card"><h3>Game</h3><p>Pixels on screen (maybe several frames)</p></div>
+    <div class="card"><h3>Helicopter / drone</h3><p>Position, orientation, velocities</p></div>
+    <div class="card"><h3>Chess</h3><p>Position of all pieces (+ castling rights…)</p></div>
+  </div>
+</section>
+
+<section data-time="3 min">
+  <h2>Environment observability</h2>
+  <div data-widget="observe" class="widget"></div>
+  <p class="small">Fully observable: $O_t = S_t$ (→ MDP). &nbsp; Partially observable: agent sees only part of it (→ POMDP): robot camera, trading agent, poker.</p>
+</section>
+
+<section data-time="4 min">
+  <h2>The Markov property</h2>
+  <p class="eq">“The future is independent of the past given the present.”</p>
+  <div class="def"><div class="lbl">Definition</div><p>A state $S_t$ is <b>Markov</b> if and only if &nbsp; $\mathbb{P}[S_{t+1} \mid S_t] = \mathbb{P}[S_{t+1} \mid S_1, \dots, S_t]$</p></div>
+  <div data-widget="markovprop" class="widget" style="margin-top:6px"></div>
+</section>
+
+<section data-optional="1" data-time="2 min">
+  <h2>Quick check: Markov or not?</h2>
+  <table class="t" style="font-size:22px;width:100%">
+    <tr><th class="l">State representation</th><th>Markov?</th><th class="l">Why</th></tr>
+    <tr><td class="l">CartPole: $(x, \dot x, \theta, \dot\theta)$</td><td class="fragment good">yes</td><td class="l fragment small">physics depends only on positions &amp; velocities</td></tr>
+    <tr><td class="l">A single Atari frame</td><td class="fragment bad">no</td><td class="l fragment small">ball direction unknown → stack 4 frames</td></tr>
+    <tr><td class="l">Your two cards in poker</td><td class="fragment bad">no</td><td class="l fragment small">betting history tells you about opponents</td></tr>
+    <tr><td class="l">Chess board image</td><td class="fragment" style="color:var(--gold);font-weight:600">almost</td><td class="l fragment small">castling rights, en passant, repetition draws depend on history!</td></tr>
+    <tr><td class="l">Entire history $H_t$</td><td class="fragment good">always</td><td class="l fragment small">trivially — but it grows without bound</td></tr>
+  </table>
+</section>
+
+<!-- ============================================================ MARKOV PROCESSES -->
+<section class="section" data-section="Markov processes">
+  <div class="kicker">Part 2</div>
+  <h1>From Markov chains to reward processes</h1>
+  <p>Build the formalism one layer at a time: $\langle S, P\rangle \to \langle S, P, R, \gamma\rangle \to \langle S, A, P, R, \gamma\rangle$</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Markov process (Markov chain)</h2>
+  <div class="def"><div class="lbl">Definition</div><p>A <b>Markov process</b> is a tuple $\langle \mathcal{S}, \mathcal{P} \rangle$: a memoryless random sequence $S_1, S_2, \dots$ with the Markov property.</p>
+    <ul class="small"><li>$\mathcal{S}$ — a (finite) set of states</li><li>$\mathcal{P}$ — a state transition probability matrix</li></ul></div>
+  <p>Transition probability: $\quad \mathcal{P}_{ss'} = \mathbb{P}\left[S_{t+1} = s' \mid S_t = s\right]$</p>
+  <div class="row center">
+    <div class="eq col">$\mathcal{P} = \begin{bmatrix} \mathcal{P}_{11} & \cdots & \mathcal{P}_{1n} \\ \vdots & \ddots & \vdots \\ \mathcal{P}_{n1} & \cdots & \mathcal{P}_{nn}\end{bmatrix}$</div>
+    <p class="col small">row = "from", column = "to"<br>each row sums to 1</p>
+  </div>
+</section>
+
+<section data-time="4 min">
+  <h2>Example: the Student Markov chain</h2>
+  <div data-widget="chain" data-seed="2" class="widget"></div>
+</section>
+
+<section data-time="2 min">
+  <h2>…and its transition matrix</h2>
+  <div data-widget="chain" data-matrix="1" data-seed="8" class="widget"></div>
+</section>
+
+<section data-time="1 min">
+  <h2>Markov reward process</h2>
+  <div class="row">
+    <div class="col" style="flex:0 0 440px">
+      <div class="def"><div class="lbl">Definition</div><p>A <b>Markov reward process</b> is a Markov chain with values: $\langle \mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma \rangle$</p></div>
+      <ul class="small">
+        <li>$\mathcal{S}$ — finite set of states</li>
+        <li>$\mathcal{P}$ — transition matrix</li>
+        <li>$\mathcal{R}$ — reward function,<br>$\mathcal{R}_s = \mathbb{E}\left[R_{t+1} \mid S_t = s\right]$</li>
+        <li>$\gamma \in [0, 1]$ — <b>discount factor</b></li>
+      </ul>
+    </div>
+    <div class="col" data-widget="chain" data-rewards="1" data-seed="3" data-width="660" data-compact="1"></div>
+  </div>
+</section>
+
+<section data-time="4 min">
+  <h2>Return and discount</h2>
+  <div class="def"><div class="lbl">Return</div><p>The return $G_t$ is the total discounted reward from time-step $t$:
+    $\quad \rew{G_t} = \rew{R_{t+1}} + \gamma \rew{R_{t+2}} + \gamma^2 \rew{R_{t+3}} + \dots = \sum_{k=0}^{\infty} \gamma^k \rew{R_{t+k+1}}$</p></div>
+  <div data-widget="discount" class="widget"></div>
+  <p class="small">$\gamma \to 0$: “myopic” — only immediate reward matters. &nbsp; $\gamma \to 1$: “far-sighted”.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Why discount?</h2>
+  <div class="row">
+    <ul class="col">
+      <li>Mathematically convenient: keeps returns <b>finite</b> in cyclic processes</li>
+      <li><b>Uncertainty</b> about the future may not be fully represented in the model</li>
+      <li>Financial rewards: money now earns interest</li>
+      <li>Animal &amp; human behaviour prefers <b>immediate</b> reward</li>
+    </ul>
+    <div class="col box">
+      <h3>Undiscounted ($\gamma = 1$)?</h3>
+      <p>Fine if all sequences are guaranteed to <b>terminate</b> (episodic tasks).</p>
+      <p class="muted">In practice $\gamma$ is also a <b>hyperparameter</b>: it trades bias (short horizon) against variance and learning difficulty.</p>
+    </div>
+  </div>
+</section>
+
+<section data-time="1 min">
+  <h2>Value function</h2>
+  <div class="def"><div class="lbl">Definition</div><p>The <b>state value function</b> $v(s)$ of an MRP is the expected return starting from state $s$:</p>
+    <div class="eq">$\est{v(s)} = \mathbb{E}\left[\,\rew{G_t} \mid S_t = s\,\right]$</div></div>
+  <ul>
+    <li>The return $G_t$ is <b>random</b> (a different episode each time)</li>
+    <li>The value $v(s)$ is its <b>average</b> — a number per state: long-term desirability</li>
+    <li class="fragment">Simplest estimate: sample many episodes and average the returns → <span class="hl">Monte-Carlo</span> (next slide, and Lecture 2)</li>
+  </ul>
+</section>
+
+<section data-time="4 min">
+  <h2>Estimating $v(\text{C1})$ by sampling</h2>
+  <div data-widget="mcvalue" data-seed="5" class="widget"></div>
+</section>
+
+<section data-time="3 min">
+  <h2>State values of the Student MRP</h2>
+  <div data-widget="mrpvalues" data-gamma="1" class="widget"></div>
+</section>
+
+<section data-time="4 min">
+  <h2>The Bellman equation for MRPs</h2>
+  <div class="colorkey"><span class="c-est">value being defined</span><span class="c-rew">reward (real experience)</span><span class="c-next">value of the next state</span></div>
+  <div class="row">
+    <div class="col-2">
+      <p>The value function decomposes into two parts:</p>
+      <ul class="small"><li><span class='c-rew'>immediate reward</span> $\rew{R_{t+1}}$</li><li><span class='c-next'>discounted value of the successor state</span> $\gamma\, \nxt{v(S_{t+1})}$</li></ul>
+      <div class="eq eq-left" style="font-size:22px">$\begin{aligned}
+        \est{v(s)} &= \mathbb{E}\left[\rew{G_t} \mid S_t = s\right] \\
+             &= \mathbb{E}\left[\rew{R_{t+1}} + \gamma \rew{R_{t+2}} + \gamma^2 \rew{R_{t+3}} + \dots \mid S_t = s\right] \\
+             &= \mathbb{E}\left[\rew{R_{t+1}} + \gamma\,(\rew{R_{t+2}} + \gamma \rew{R_{t+3}} + \dots) \mid S_t = s\right] \\
+             &= \mathbb{E}\left[\rew{R_{t+1}} + \gamma\, \rew{G_{t+1}} \mid S_t = s\right] \\
+             &= \mathbb{E}\left[\rew{R_{t+1}} + \gamma\, \nxt{v(S_{t+1})} \mid S_t = s\right]
+      \end{aligned}$</div>
+    </div>
+    <div class="col">
+      <svg width="300" height="230" viewBox="0 0 300 230">
+        <circle cx="150" cy="40" r="26" fill="#fff4d6" stroke="#d9480f" stroke-width="3"/><text x="150" y="46" text-anchor="middle" font-size="18" font-weight="700">v(s)</text>
+        <line x1="150" y1="66" x2="70" y2="170" stroke="#1d2433" stroke-width="2"/><line x1="150" y1="66" x2="150" y2="170" stroke="#1d2433" stroke-width="2"/><line x1="150" y1="66" x2="230" y2="170" stroke="#1d2433" stroke-width="2"/>
+        <text x="185" y="112" font-size="16" fill="#2b8a3e" font-weight="700">r</text>
+        <circle cx="70" cy="190" r="22" fill="#fff" stroke="#1f5fae" stroke-width="2.5"/><circle cx="150" cy="190" r="22" fill="#fff" stroke="#1f5fae" stroke-width="2.5"/><circle cx="230" cy="190" r="22" fill="#fff" stroke="#1f5fae" stroke-width="2.5"/>
+        <text x="150" y="228" text-anchor="middle" font-size="15" fill="#1f5fae">v(s′)</text>
+      </svg>
+      <div class="eq fragment">$\est{v(s)} = \rew{\mathcal{R}_s} + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}\, \nxt{v(s')}$</div>
+      <p class="small fragment">one-step look-ahead: <b><span class='c-est'>value</span> = <span class='c-rew'>reward now</span> + discounted average <span class='c-next'>value next</span></b></p>
+    </div>
+  </div>
+</section>
+
+<section data-optional="1" data-time="3 min">
+  <h2>Bellman equation in matrix form</h2>
+  <div class="row">
+    <div class="col">
+      <div class="eq">$\est{\mathbf{v}} = \rew{\mathcal{R}} + \gamma\, \mathcal{P}\, \nxt{\mathbf{v}}$</div>
+      <div class="eq" style="font-size:21px">$\est{\begin{bmatrix} v(1) \\ \vdots \\ v(n)\end{bmatrix}} = \rew{\begin{bmatrix} \mathcal{R}_1 \\ \vdots \\ \mathcal{R}_n\end{bmatrix}} + \gamma \begin{bmatrix} \mathcal{P}_{11} & \cdots & \mathcal{P}_{1n} \\ \vdots & & \vdots \\ \mathcal{P}_{n1} & \cdots & \mathcal{P}_{nn}\end{bmatrix} \nxt{\begin{bmatrix} v(1) \\ \vdots \\ v(n)\end{bmatrix}}$</div>
+    </div>
+    <div class="col box">
+      <h3>It's linear → solve directly</h3>
+      <div class="eq" style="font-size:22px">$\mathbf{v} = (I - \gamma \mathcal{P})^{-1} \mathcal{R}$</div>
+      <ul class="small">
+        <li>cost $O(n^3)$ for $n$ states → only small MRPs</li>
+        <li>Large problems: iterative methods
+          <ul><li>Dynamic programming</li><li>Monte-Carlo evaluation</li><li>Temporal-Difference learning</li></ul></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section data-optional="1" data-time="3 min">
+  <h2>Or: just apply the Bellman equation repeatedly</h2>
+  <div data-widget="iterate" class="widget"></div>
+</section>
+
+<section class="brk" data-section="Break">
+  <h1>☕ Break</h1>
+  <p style="font-size:26px">10 minutes. Next: adding <b>decisions</b> → Markov Decision Processes</p>
+</section>
+
+<!-- ============================================================ MDPs -->
+<section class="section" data-section="MDPs">
+  <div class="kicker">Part 3</div>
+  <h1>Markov Decision Processes</h1>
+  <p>Now the agent gets to choose.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Markov decision process</h2>
+  <div class="def"><div class="lbl">Definition</div><p>A <b>Markov decision process</b> is an MRP with decisions: $\langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma \rangle$</p>
+    <ul class="small">
+      <li>$\mathcal{S}$ — finite set of states &nbsp;·&nbsp; $\mathcal{A}$ — finite set of <b>actions</b></li>
+      <li>$\mathcal{P}^a_{ss'} = \mathbb{P}\left[S_{t+1} = s' \mid S_t = s, A_t = a\right]$ — transitions now depend on the action</li>
+      <li>$\mathcal{R}^a_s = \mathbb{E}\left[R_{t+1} \mid S_t = s, A_t = a\right]$</li>
+      <li>$\gamma \in [0,1]$</li>
+    </ul></div>
+  <ul>
+    <li>Almost all RL problems can be formalised as MDPs (optimal control = continuous MDPs; POMDPs can be converted)</li>
+    <li>Transitions may still be <b>stochastic</b>: the same action can lead to different next states</li>
+  </ul>
+</section>
+
+<section data-time="2 min">
+  <h2>Example: the Student MDP</h2>
+  <div data-widget="mdp" data-mode="plain" class="widget"></div>
+</section>
+
+<section data-time="2 min">
+  <h2>Policies</h2>
+  <div class="def"><div class="lbl">Definition</div><p>A <b>policy</b> $\pi$ is a distribution over actions given states: &nbsp; $\pi(a \mid s) = \mathbb{P}\left[A_t = a \mid S_t = s\right]$</p></div>
+  <ul>
+    <li>A policy <b>fully defines the behaviour</b> of an agent</li>
+    <li>MDP policies depend only on the current state (not the history) → <b>stationary</b></li>
+    <li><b>Stochastic</b>: in state $s$ take $a_1$ w.p. 0.8, $a_2$ w.p. 0.2 &nbsp;·&nbsp; <b>Deterministic</b>: $a = \pi(s)$</li>
+  </ul>
+  <div class="box" style="margin-top:8px">
+    <p class="small" style="margin:0">Given an MDP and a fixed policy $\pi$, the process reduces to an <b>MRP</b> $\langle \mathcal{S}, \mathcal{P}^\pi, \mathcal{R}^\pi, \gamma \rangle$ with
+    $\;\mathcal{P}^\pi_{ss'} = \sum_{a} \pi(a|s)\, \mathcal{P}^a_{ss'}\;$ and $\;\mathcal{R}^\pi_s = \sum_a \pi(a|s)\, \mathcal{R}^a_s$ — so everything from Part 2 applies!</p>
+  </div>
+</section>
+
+<section data-time="4 min">
+  <h2>A simple MDP: Grid World</h2>
+  <div class="row">
+    <div data-widget="gridwalk" class="widget col-2"></div>
+    <div class="col small">
+      <p>Actions: ↑ → ↓ ←</p>
+      <p>Reward −1 on every step</p>
+      <p>Objective: reach a grey terminal cell in the <b>fewest</b> steps</p>
+    </div>
+  </div>
+</section>
+
+<section data-time="2 min">
+  <h2>Value functions of an MDP</h2>
+  <div class="def"><div class="lbl">State-value function</div><p>$v_\pi(s)$: expected return starting from $s$, then following $\pi$</p>
+    <div class="eq">$\est{v_\pi(s)} = \mathbb{E}_\pi\left[\,\rew{G_t} \mid S_t = s\,\right]$</div></div>
+  <div class="def" style="border-color:var(--purple);background:var(--purple-soft)"><div class="lbl" style="color:var(--purple)">Action-value function</div><p>$q_\pi(s,a)$: expected return starting from $s$, taking action $a$, then following $\pi$</p>
+    <div class="eq">$\est{q_\pi(s, a)} = \mathbb{E}_\pi\left[\,\rew{G_t} \mid S_t = s, A_t = a\,\right]$</div></div>
+  <p class="small fragment">$q$ answers “how good is <i>this action</i> here?” — the quantity Q-learning and DQN learn directly.</p>
+</section>
+
+<section data-time="4 min">
+  <h2>$v_\pi$ for the Student MDP — you choose $\pi$</h2>
+  <div data-widget="mdp" data-mode="policy" data-select="C3" class="widget"></div>
+</section>
+
+<section data-time="3 min">
+  <h2>Bellman expectation equations</h2>
+  <p>Same decomposition: immediate reward + discounted value of the successor:</p>
+  <div class="eq">$\est{v_\pi(s)} = \mathbb{E}_\pi\left[\rew{R_{t+1}} + \gamma\, \nxt{v_\pi(S_{t+1})} \mid S_t = s\right]$</div>
+  <div class="eq">$\est{q_\pi(s,a)} = \mathbb{E}_\pi\left[\rew{R_{t+1}} + \gamma\, \nxt{q_\pi(S_{t+1}, A_{t+1})} \mid S_t = s, A_t = a\right]$</div>
+  <div class="row" style="margin-top:14px">
+    <div class="col box fragment"><h3>$v$ from $q$ — average over the agent's choice</h3><div class="eq" style="font-size:22px">$\est{v_\pi(s)} = \sum_{a} \pi(a|s)\, q_\pi(s,a)$</div></div>
+    <div class="col box fragment"><h3>$q$ from $v$ — average over the environment</h3><div class="eq" style="font-size:22px">$\est{q_\pi(s,a)} = \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'}\, \nxt{v_\pi(s')}$</div></div>
+  </div>
+</section>
+
+<section data-time="4 min">
+  <h2>Backup diagrams: two averages stacked</h2>
+  <div data-widget="backup" class="widget"></div>
+  <div class="eq fragment" style="font-size:22px">$\est{v_\pi(s)} = \sum_{a} \pi(a|s) \left( \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'}\, \nxt{v_\pi(s')} \right) \qquad \est{q_\pi(s,a)} = \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'} \sum_{a'} \pi(a'|s')\, \nxt{q_\pi(s',a')}$</div>
+</section>
+
+<section data-time="2 min">
+  <h2>Your turn</h2>
+  <p>Uniform random policy, $\gamma = 1$. Given $v_\pi(\text{C1}) = -1.3$, $v_\pi(\text{C2}) = 2.7$, $v_\pi(\text{C3}) = 7.4$, verify $v_\pi(\text{C3})$:</p>
+  <div class="eq fragment eq-left" style="font-size:24px">$\begin{aligned} v_\pi(\text{C3}) &= 0.5\,\underbrace{(10)}_{\text{Study}} + 0.5\,\underbrace{\big(1 + 0.2(-1.3) + 0.4(2.7) + 0.4(7.4)\big)}_{\text{Pub}} \\ &= 5 + 0.5\,(4.78) = 7.39 \approx 7.4 \;\checkmark \end{aligned}$</div>
+  <p class="fragment small muted">Bellman expectation equation holds — and it holds for <b>every</b> state simultaneously. That's a linear system: $\mathbf{v}_\pi = (I - \gamma\mathcal{P}^\pi)^{-1}\mathcal{R}^\pi$.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Optimal value functions</h2>
+  <div class="def"><div class="lbl">Definition</div>
+    <p>The <b>optimal state-value function</b> is the maximum over all policies: $\quad v_*(s) = \max_\pi v_\pi(s)$</p>
+    <p>The <b>optimal action-value function</b>: $\quad q_*(s,a) = \max_\pi q_\pi(s,a)$</p></div>
+  <ul>
+    <li>$v_*$ specifies the best possible performance in the MDP</li>
+    <li>An MDP is <b>“solved”</b> when we know the optimal value function</li>
+  </ul>
+</section>
+
+<section data-time="3 min">
+  <h2>Optimal values for the Student MDP</h2>
+  <div data-widget="mdp" data-mode="optimal" data-select="C1" class="widget"></div>
+</section>
+
+<section data-time="2 min">
+  <h2>Optimal policy</h2>
+  <p>Partial ordering: &nbsp; $\pi \geq \pi' \;\text{ if }\; v_\pi(s) \geq v_{\pi'}(s),\; \forall s$</p>
+  <div class="def"><div class="lbl">Theorem — for any MDP</div>
+    <ul class="small">
+      <li>There exists an optimal policy $\pi_*$ that is better than or equal to all other policies</li>
+      <li>All optimal policies achieve $v_{\pi_*}(s) = v_*(s)$ and $q_{\pi_*}(s,a) = q_*(s,a)$</li>
+    </ul></div>
+  <div class="box green fragment"><h3>If we know $q_*$, we're done</h3>
+    <div class="eq" style="font-size:22px">$\pi_*(a|s) = \begin{cases} 1 & \text{if } a = \arg\max_{a \in \mathcal{A}} q_*(s,a) \\ 0 & \text{otherwise}\end{cases}$</div>
+    <p class="small">There is always a <b>deterministic</b> optimal policy. No model needed to act: just take the argmax.</p></div>
+</section>
+
+<section data-time="4 min">
+  <h2>Bellman optimality equations</h2>
+  <div class="row">
+    <div class="eq col" style="font-size:21px">$\est{v_*(s)} = \max_a \left( \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'}\, \nxt{v_*(s')} \right)$</div>
+    <div class="eq col" style="font-size:21px">$\est{q_*(s,a)} = \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'} \nxt{\max_{a'} q_*(s', a')}$</div>
+  </div>
+  <p class="small" style="margin:0 0 4px">Instead of <b>averaging</b> over the agent's actions, take the <b>max</b>. The environment's randomness is still averaged.</p>
+  <div data-widget="backup" data-mode="max" data-small="560"></div>
+</section>
+
+<section data-time="2 min">
+  <h2>Solving the Bellman optimality equation</h2>
+  <ul>
+    <li>The max makes it <b>non-linear</b> → no closed-form solution in general</li>
+    <li>Many iterative solution methods:</li>
+  </ul>
+  <div class="cards c2" style="margin-top:6px">
+    <div class="card"><h3>Know the model $\mathcal{P}, \mathcal{R}$? → Planning</h3><p>Value iteration · Policy iteration (dynamic programming)</p></div>
+    <div class="card"><h3>Only have experience? → RL</h3><p>Monte-Carlo · SARSA · Q-learning · DQN · policy gradients</p></div>
+  </div>
+  <p class="fragment" style="margin-top:20px">The rest of the course is, essentially, <b>clever ways of solving the Bellman equations</b> when the state space is huge and the model is unknown.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Summary</h2>
+  <table class="t" style="width:100%;font-size:20px">
+    <tr><th class="l">Object</th><th class="l">Tuple</th><th class="l">Key equation</th></tr>
+    <tr><td class="l">Markov chain</td><td class="l">$\langle S, P\rangle$</td><td class="l">$\mathcal{P}_{ss'} = \mathbb{P}[S_{t+1}=s' \mid S_t=s]$</td></tr>
+    <tr><td class="l">Markov reward process</td><td class="l">$\langle S, P, R, \gamma\rangle$</td><td class="l">$\est{v(s)} = \rew{\mathcal{R}_s} + \gamma \sum_{s'} \mathcal{P}_{ss'} \nxt{v(s')}$</td></tr>
+    <tr><td class="l">MDP, fixed policy</td><td class="l">$\langle S, A, P, R, \gamma\rangle + \pi$</td><td class="l">$\est{v_\pi(s)} = \sum_a \pi(a|s)\big(\rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'} \nxt{v_\pi(s')}\big)$</td></tr>
+    <tr><td class="l">MDP, optimal</td><td class="l">$\langle S, A, P, R, \gamma\rangle$</td><td class="l">$\est{q_*(s,a)} = \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'} \nxt{\max_{a'} q_*(s',a')}$</td></tr>
+  </table>
+  <ul class="small" style="margin-top:14px">
+    <li>Return $G_t$ = discounted sum of future rewards; value = its expectation</li>
+    <li>Bellman: value now = reward + discounted value next &nbsp;·&nbsp; expectation ↔ average, optimality ↔ max</li>
+  </ul>
+</section>
+
+<section data-time="1 min">
+  <h2>Next time</h2>
+  <div class="cards c3">
+    <div class="card"><h3>Planning</h3><p>Policy evaluation, policy iteration, value iteration on grid worlds</p></div>
+    <div class="card"><h3>Learning</h3><p>Monte-Carlo vs Temporal-Difference · SARSA · Q-learning (cliff walking!)</p></div>
+    <div class="card"><h3>Deep RL</h3><p>DQN on CartPole with Stable-Baselines3 · policy gradients &amp; PPO · the assignment</p></div>
+  </div>
+  <p style="margin-top:30px" class="muted">Before next time: install <code>gymnasium</code> and <code>stable-baselines3</code> and run <code>random_cartpole.py</code>.</p>
+</section>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CCE5502 RL Lectures</title>
+<link rel="stylesheet" href="assets/deck.css?v=202609280942">
+<style>
+  :root { --bg: #fbfaf7; --ink: #1d2433; --muted: #5b6475; --accent: #1f5fae; --panel: #f3f1ec; }
+  html, body { overflow: auto; height: auto; background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 19px/1.5 "Source Serif 4", Georgia, serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 48px 16px; }
+  h1 { font-size: 34px; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 32px; }
+  a.card { display: block; background: #fff; border: 1.5px solid #e6e3dc; border-left: 6px solid var(--accent); border-radius: 12px; padding: 18px 22px; margin: 0 0 16px; color: inherit; text-decoration: none; }
+  a.card:hover { border-color: var(--accent); }
+  a.card h2 { margin: 0 0 4px; font-size: 22px; color: var(--accent); }
+  a.card p { margin: 0; color: var(--muted); font-size: 16px; }
+  .deckrow { display: flex; gap: 10px; align-items: stretch; margin: 0 0 16px; }
+  .deckrow a.card { flex: 1; margin: 0; }
+  a.pdf { display: flex; flex-direction: column; justify-content: center; align-items: center; min-width: 88px; background: #fff; border: 1.5px solid #e6e3dc; border-radius: 12px; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 15px; }
+  a.pdf:hover { border-color: var(--accent); }
+  a.pdf span { font-size: 26px; }
+  @media (max-width: 560px) { .deckrow { flex-direction: column; } a.pdf { flex-direction: row; gap: 8px; padding: 8px; } }
+  table { border-collapse: collapse; font-size: 15px; margin-top: 12px; }
+  td { padding: 3px 14px 3px 0; } kbd { background: var(--panel); border: 1px solid #ddd; border-radius: 4px; padding: 1px 6px; font-family: ui-monospace, monospace; }
+</style>
+</head>
+<body>
+<main>
+  <h1>CCE5502 · Reinforcement Learning</h1>
+  <p class="sub">Two interactive lectures (~2 hours each). Click a title to open the slides, or download the PDF.</p>
+  <div class="deckrow"><a class="card" href="L1_Intro_to_RL_and_MDPs.html"><h2>Lecture 1 — Introduction to RL &amp; MDPs</h2><p>Agent–environment loop, Markov property, Markov chains → reward processes → MDPs, return &amp; discounting, value functions, Bellman expectation &amp; optimality equations.</p></a><a class="pdf" href="pdf/L1_Intro_to_RL_and_MDPs.pdf" download><span>⤓</span>PDF</a></div>
+  <div class="deckrow"><a class="card" href="L2_RL_Algorithms.html"><h2>Lecture 2 — RL algorithms</h2><p>Policy &amp; value iteration, exploration, Monte-Carlo vs TD, SARSA &amp; Q-learning (cliff walking), DQN &amp; CartPole with Stable-Baselines3, policy gradients, PPO, reward hacking.</p></a><a class="pdf" href="pdf/L2_RL_Algorithms.pdf" download><span>⤓</span>PDF</a></div>
+  <div class="deckrow"><a class="card" href="archive/2025/" style="border-left-color:#868e96"><h2 style="color:#868e96">Archive — 2025 slides</h2><p>Last year's lecture slides (PDF).</p></a><a class="pdf" href="archive/2025/Lecture_1_Intro_to_RL_CCE5502.pdf" download><span>⤓</span>L1</a><a class="pdf" href="archive/2025/Lecture_2_RL_algorithms_CCE5502.pdf" download><span>⤓</span>L2</a></div>
+  <table>
+    <tr><td><kbd>→</kbd> <kbd>Space</kbd></td><td>next step / slide</td><td></td><td></td></tr>
+    <tr><td><kbd>←</kbd></td><td>previous</td><td></td><td></td></tr>
+    <tr><td><kbd>O</kbd></td><td>overview</td><td><kbd>F</kbd></td><td>fullscreen</td></tr>
+    <tr><td><kbd>I</kbd> or ⌂</td><td>back to this page</td><td><kbd>?</kbd></td><td>all shortcuts</td></tr>
+  </table>
+</main>
+</body>
+</html>
