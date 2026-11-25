@@ -30,6 +30,7 @@ No GPU needed — everything runs on CPU (and is faster there for networks this 
 | Per-step trace | `python evaluate.py runs/q1_baseline/seed0 --trace traces/Q1.csv` |
 | Learning curves | `python plot_runs.py runs/q1_baseline runs/q2_no_target:"no target" -o figures/Q2.png` |
 | TensorBoard | `tensorboard --logdir runs` |
+| **Submit** | save your report as `report.pdf` here, then `python make_submission.py Firstname_Lastname` → upload the ZIP to the VLE |
 
 Tip: seeds are independent, so you can run them in parallel in separate terminals
 (`--seeds 0`, `--seeds 1`, …) if your laptop has spare cores.

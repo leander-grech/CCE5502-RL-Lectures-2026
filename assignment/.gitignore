@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .ipynb_checkpoints/
 # runs/, videos/, figures/ and traces/ are NOT ignored: they are part of your submission.
+*_CCE5502.zip

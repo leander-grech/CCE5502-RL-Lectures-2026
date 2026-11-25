@@ -24,7 +24,7 @@
 
 <section data-time="2 min" class="mm">
   <h2>The assignment at a glance</h2>
-  <div data-widget="mindmap"><script type="application/json">{"center": ["Assignment", "Work, Break & Adapt"], "branches": [{"label": "Your CartPole", "leaves": [["CartPole in action", "CartPole in action"], ["Personal variant", "Everyone gets a different CartPole"], ["Getting started", "Getting started"], ["Evidence rule", "Every run leaves evidence"]]}, {"label": "Parts 0 & A", "leaves": [["Predictions first", "Part 0"], ["Baseline, 3 seeds", "Part A"]]}, {"label": "Part B", "leaves": [["No target network", "Part B"], ["No replay buffer", "Part B"]]}, {"label": "Part C", "leaves": [["Delayed motor", "Part C"], ["Markov property", "Part C"]]}, {"label": "Part D", "leaves": [["Design a reward", "Part D"], ["Reward hacking", "Part D"]]}, {"label": "Marking & rules", "leaves": [["Marks split", "How the 100 marks"], ["Good answers", "What a good answer looks like", 1], ["AI tools", "AI tools"], ["The oral", "The oral"], ["Timeline", "Timeline"]], "dark": true}]}</script></div>
+  <div data-widget="mindmap"><script type="application/json">{"center": ["Assignment", "Work, Break & Adapt"], "branches": [{"label": "Your CartPole", "leaves": [["CartPole in action", "CartPole in action"], ["Personal variant", "Everyone gets a different CartPole"], ["Getting started", "Getting started"], ["Evidence rule", "Every run leaves evidence"]]}, {"label": "Parts 0 & A", "leaves": [["Predictions first", "Part 0"], ["Baseline, 3 seeds", "Part A"]]}, {"label": "Part B", "leaves": [["No target network", "Part B"], ["No replay buffer", "Part B"]]}, {"label": "Part C", "leaves": [["Delayed motor", "Part C"], ["Markov property", "Part C"]]}, {"label": "Part D", "leaves": [["Design a reward", "Part D"], ["Reward hacking", "Part D"]]}, {"label": "Marking & rules", "leaves": [["Marks split", "How the 100 marks"], ["Good answers", "What a good answer looks like", 1], ["AI tools", "AI tools"], ["The oral", "The oral"], ["What to submit", "What to submit"], ["Timeline", "Timeline"]], "dark": true}]}</script></div>
 </section>
 
 <section data-time="2 min">
@@ -243,19 +243,39 @@ python evaluate.py runs/q4_target/seed0 --trace traces/D_target.csv</pre></li>
 </section>
 
 <section data-time="2 min">
+  <h2>What to submit (one ZIP on the VLE)</h2>
+  <div class="row">
+    <div class="col" style="flex:1.2">
+      <ol class="steps">
+        <li><b>Your answers as a PDF</b> (<code>report.pdf</code>), labelled with the question numbers <b>A1, A2, … E2</b> as in <code>report_template.md</code>, with your plots and tables next to the answers</li>
+        <li><b>Every run you used for your answers</b>: the whole <code>runs/&lt;name&gt;/seed&lt;k&gt;/</code> folders, including the <b>TensorBoard logs</b> (<code>tb/</code>)</li>
+        <li>The <b>videos</b>, <b>traces</b> and <b>figures</b> you refer to</li>
+        <li><code>STUDENT_ID</code>, <code>git_log.txt</code> and <code>rl_assignment/</code> (with your <code>rewards.py</code>)</li>
+      </ol>
+    </div>
+    <div class="col box blue"><h3>The easy way</h3>
+      <p class="small" style="margin:0 0 4px">Save your report as <code>report.pdf</code> in the <code>assignment/</code> folder, then:</p>
+<pre class="cmd">python make_submission.py Firstname_Lastname</pre>
+      <p class="small" style="margin:8px 0 0">It collects exactly these files into <code>Firstname_Lastname_CCE5502.zip</code> (never your <code>.venv/</code>) and warns you if something is missing. Open the ZIP to check it, then upload it to the VLE by <b>Fri 8 Jan 2027</b>.</p></div>
+  </div>
+  <div class="box orange" style="margin-top:14px"><p class="small" style="margin:0">Anything not in the ZIP can't be used as evidence: a number or plot in your report needs its run inside the ZIP.</p></div>
+</section>
+
+<section data-time="2 min">
   <h2>Timeline &amp; help</h2>
   <table class="t" style="width:100%;font-size:20px">
     <tr><th class="l">When</th><th class="l">What</th></tr>
     <tr><td class="l">Wed 25 Nov</td><td class="l">Released · install, <code>setup_student.py</code>, smoke test</td></tr>
     <tr><td class="l">Wed 2 Dec</td><td class="l"><b>Part 0 predictions due</b> (VLE) · then Part A</td></tr>
-    <tr><td class="l">December</td><td class="l">Parts B and C</td></tr>
-    <tr><td class="l"><b>Fri 8 Jan 2027</b></td><td class="l"><b>Deadline</b>: Parts D and E · submit one ZIP on the VLE</td></tr>
+    <tr><td class="l">December</td><td class="l">Parts B, C and D · write up as you go</td></tr>
+    <tr><td class="l"><b>Fri 8 Jan 2027</b></td><td class="l"><b>Deadline</b>: one ZIP on the VLE — report PDF (answers labelled A1 … E2, with plots) + all runs, videos and TensorBoard logs</td></tr>
     <tr><td class="l">After the deadline</td><td class="l">Oral only if you are invited</td></tr>
   </table>
   <ul class="small" style="margin-top:14px">
     <li>Stuck? Post the <b>full error text</b> (not a screenshot) on the VLE forum</li>
     <li>Agent never reaches 500? That's a result — report it honestly and discuss it</li>
     <li>High reward but the video looks wrong? Great observation — write about it</li>
+    <li>Before uploading: run <code>python make_submission.py Firstname_Lastname</code> and open the ZIP to check <code>report.pdf</code> and <code>runs/</code> are inside</li>
   </ul>
 </section>
 

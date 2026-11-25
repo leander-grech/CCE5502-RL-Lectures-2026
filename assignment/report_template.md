@@ -1,6 +1,7 @@
 # CCE5502 RL Assignment 2026 — ⟨Firstname Lastname⟩ ⟨student number⟩
 
 > Keep these headings (they match the assignment sheet). Maximum 8 pages excluding the appendix.
+> Export the finished report as `report.pdf` in the `assignment/` folder, then run `python make_submission.py Firstname_Lastname`.
 > Put the source file next to every number, e.g. `(runs/q1_baseline/seed*/eval.json)`.
 
 ## Part A — Baseline
