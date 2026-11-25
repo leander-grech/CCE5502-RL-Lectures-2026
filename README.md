@@ -11,6 +11,17 @@ Interactive lecture slides for **CCE5502 – Fundamentals of AI and ML** (Univer
 
 PDFs of each deck are in [`pdf/`](pdf/). The 2025 slides are kept in [`archive/2025/`](archive/2025/).
 
+## RL assignment 2026
+
+The assignment sheet and the starter kit are in [`assignment/`](assignment/):
+
+```bash
+git clone https://github.com/leander-grech/CCE5502-RL-Lectures-2026.git
+cd CCE5502-RL-Lectures-2026/assignment
+```
+
+Then follow [`assignment/README.md`](assignment/README.md) and the [assignment sheet](assignment/CCE5502_RL_Assignment_2026.pdf).
+
 ## Using the slides
 
 Everything runs in the browser with no build step and no internet needed (KaTeX and fonts are bundled), so you can also clone the repo and open `index.html` locally.

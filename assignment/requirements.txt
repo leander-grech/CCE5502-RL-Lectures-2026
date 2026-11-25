@@ -1,0 +1,8 @@
+gymnasium[classic-control]>=1.0
+stable-baselines3>=2.3
+torch>=2.1
+tensorboard
+numpy
+pandas
+matplotlib
+imageio[ffmpeg]
