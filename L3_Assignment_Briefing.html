@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RL Assignment Briefing</title>
+<link rel="stylesheet" href="assets/katex/katex.min.css?v=202609280942">
+<link rel="stylesheet" href="assets/deck.css?v=202609280942">
+<script defer src="assets/katex/katex.min.js?v=202609280942"></script>
+<script defer src="assets/katex/auto-render.min.js?v=202609280942"></script>
+<script defer src="assets/deck.js?v=202609280942"></script>
+<script defer src="assets/rl-common.js?v=202609280942"></script>
+<script defer src="assets/mindmap.js?v=202609280942"></script>
+<script defer src="assets/assign.js?v=202609280942"></script>
+</head>
+<body>
+<div class="deck" data-footer="CCE5502 · RL assignment briefing">
+
+<section class="title" data-section="Opening">
+  <h1>RL Assignment:<br>Making DQN Work, Break and Adapt</h1>
+  <p class="subtitle">What you'll do, how it's marked, and how to get started</p>
+  <p class="who">Dr Leander Grech<br>CCE5502 – Fundamentals of AI and ML</p>
+</section>
+
+<section data-time="2 min" class="mm">
+  <h2>The assignment at a glance</h2>
+  <div data-widget="mindmap"><script type="application/json">{"center": ["Assignment", "Work, Break & Adapt"], "branches": [{"label": "Your CartPole", "leaves": [["CartPole in action", "CartPole in action"], ["Personal variant", "Everyone gets a different CartPole"], ["Getting started", "Getting started"], ["Evidence rule", "Every run leaves evidence"]]}, {"label": "Parts 0 & A", "leaves": [["Predictions first", "Part 0"], ["Baseline, 3 seeds", "Part A"]]}, {"label": "Part B", "leaves": [["No target network", "Part B"], ["No replay buffer", "Part B"]]}, {"label": "Part C", "leaves": [["Delayed motor", "Part C"], ["Markov property", "Part C"]]}, {"label": "Part D", "leaves": [["Design a reward", "Part D"], ["Reward hacking", "Part D"]]}, {"label": "Marking & rules", "leaves": [["Marks split", "How the 100 marks"], ["Good answers", "What a good answer looks like", 1], ["AI tools", "AI tools"], ["The oral", "The oral"], ["Timeline", "Timeline"]], "dark": true}]}</script></div>
+</section>
+
+<section data-time="2 min">
+  <h2>In one sentence</h2>
+  <p style="font-size:30px;line-height:1.4;margin-top:30px">You will <b>train</b> DQN agents on <b>your own CartPole</b>, <b>switch off</b> parts of DQN, <b>break the motor</b>, <b>design a reward</b> — and <b>explain</b> what you see using the lectures.</p>
+  <div class="cards c3" style="margin-top:36px">
+    <div class="card"><div class="big">🧑‍💻</div><h3>No RL coding from scratch</h3><p>All algorithms and scripts are provided. You run experiments and write one small reward function.</p></div>
+    <div class="card"><div class="big">🔍</div><h3>Marks for understanding</h3><p>Short, specific explanations of <i>your</i> plots and videos.</p></div>
+    <div class="card"><div class="big">💻</div><h3>Laptop is enough</h3><p>CPU only. One training run ≈ 5–10 minutes.</p></div>
+  </div>
+</section>
+
+<section data-time="2 min">
+  <h2>CartPole in action</h2>
+  <div class="row" style="margin-top:6px;align-items:flex-start">
+    <div class="col box" style="text-align:center"><h3>Trained DQN agent</h3>
+      <img src="assets/img/cartpole_trained.gif" alt="A trained DQN agent balancing the pole for the full 500 steps" style="width:100%;max-width:440px;border-radius:6px">
+      <p class="small" style="margin:6px 0 0">Balances for all <b>500 steps</b> (10 s), nudging left and right every 20 ms.</p></div>
+    <div class="col box" style="text-align:center"><h3>No control (zero force)</h3>
+      <img src="assets/img/cartpole_noop.gif" alt="With no force applied, the pole falls over within two seconds" style="width:100%;max-width:440px;border-radius:6px">
+      <p class="small" style="margin:6px 0 0">The pole falls on its own. The episode <b>ends at 12°</b> after 94 steps (1.9 s); we keep simulating to show the fall.</p></div>
+  </div>
+  <p class="small" style="margin-top:12px">State $(x, \dot x, \theta, \dot\theta)$ · actions: push <b>left</b> or <b>right</b> · reward <b>+1</b> per step · ends when $|\theta| > 12°$, $|x| > 2.4$ m, or after 500 steps.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>How the 100 marks are split</h2>
+  <table class="t" style="width:100%;font-size:21px">
+    <tr><th class="l">Part</th><th class="l">What you do</th><th>Marks</th><th class="l" style="width:34%"></th></tr>
+    <tr><td class="l"><b>0</b> Predictions</td><td class="l">5 short guesses on the VLE, <b>before</b> experimenting</td><td>5</td><td class="l"><div style="height:16px;width:10%;background:var(--purple);border-radius:4px"></div></td></tr>
+    <tr><td class="l"><b>A</b> Baseline</td><td class="l">train 3 agents, plot, test, watch</td><td>30</td><td class="l"><div style="height:16px;width:60%;background:var(--accent);border-radius:4px"></div></td></tr>
+    <tr><td class="l"><b>B</b> What makes DQN work?</td><td class="l">remove the target network / replay buffer</td><td>22</td><td class="l"><div style="height:16px;width:44%;background:var(--accent);border-radius:4px"></div></td></tr>
+    <tr><td class="l"><b>C</b> The broken motor</td><td class="l">a delayed, weaker motor; Markov property</td><td>22</td><td class="l"><div style="height:16px;width:44%;background:var(--accent);border-radius:4px"></div></td></tr>
+    <tr><td class="l"><b>D</b> Design a reward</td><td class="l">keep the cart at your target x*</td><td>16</td><td class="l"><div style="height:16px;width:32%;background:var(--accent);border-radius:4px"></div></td></tr>
+    <tr><td class="l"><b>E</b> Reflection</td><td class="l">your predictions vs reality · AI-use statement</td><td>5</td><td class="l"><div style="height:16px;width:10%;background:var(--purple);border-radius:4px"></div></td></tr>
+  </table>
+  <p class="small muted" style="margin-top:12px">Every part is broken into small steps (A1, A2, …) worth 1–7 marks each — see the assignment sheet. All 100 marks are for the report.</p>
+</section>
+
+<section data-time="4 min" data-section="Your CartPole">
+  <h2>Everyone gets a different CartPole</h2>
+  <div data-widget="variantcard" class="widget"></div>
+  <p class="small" style="margin-top:10px">Your student number decides your physics, sensor noise, broken motor and target. Run <code>python setup_student.py &lt;id&gt;</code> and paste the card into your report.</p>
+</section>
+
+<section data-time="3 min">
+  <h2>Getting started (do this this week)</h2>
+  <style>
+    .steps { margin:8px 0 0; padding-left:1.4em; font-size:19px; line-height:1.3; }
+    .steps li { margin-bottom:9px; }
+    .steps pre, pre.cmd { font-size:14px; padding:6px 12px; margin:4px 0 0; border-radius:7px; }
+    .steps .why { color:var(--muted); font-size:16px; }
+  </style>
+  <p class="small" style="margin:0 0 6px">Open a terminal and type these one at a time (the grey text after <code>#</code> is a comment, don't type it):</p>
+<pre style="font-size:16px">git clone https://github.com/leander-grech/CCE5502-RL-Lectures-2026.git
+cd CCE5502-RL-Lectures-2026/assignment
+python -m venv .venv &amp;&amp; source .venv/bin/activate      <span class="c"># Windows: .venv\Scripts\activate</span>
+pip install -r requirements.txt
+python setup_student.py 123456M                           <span class="c"># your student number</span>
+python train.py --name smoke --timesteps 5000              <span class="c"># ~30 s check that everything works</span></pre>
+  <div class="row" style="margin-top:14px">
+    <div class="col box"><h3>Every time you come back</h3><p class="small" style="margin:0 0 4px">Go to the folder and switch the environment on again:</p>
+<pre class="cmd">cd CCE5502-RL-Lectures-2026/assignment
+source .venv/bin/activate     <span class="c"># Mac / Linux</span>
+.venv\Scripts\activate        <span class="c"># Windows</span></pre>
+      <p class="small" style="margin:8px 0 4px">Save your progress after each part:</p>
+<pre class="cmd">git add -A &amp;&amp; git commit -m "part A"</pre></div>
+    <div class="col box blue"><h3>Tip: train seeds in parallel</h3><p class="small" style="margin:0 0 4px">Seeds are independent. <b>Instead of</b> one command with <code>--seeds 0 1 2</code>, open 3 terminals (activate the environment in each) and run one line in each, at the same time:</p>
+<pre class="cmd">python train.py --name q1_baseline --seeds 0
+python train.py --name q1_baseline --seeds 1
+python train.py --name q1_baseline --seeds 2</pre>
+      <p class="small" style="margin:8px 0 0">All statistics: <code>tensorboard --logdir runs</code>, then open <code>http://localhost:6006</code>.</p></div>
+  </div>
+</section>
+
+<section data-time="2 min">
+  <h2>Every run leaves evidence</h2>
+  <div class="row">
+<pre style="flex:1;font-size:16px">runs/q1_baseline/seed0/
+├── config.json      <span class="c"># all settings + your fingerprint</span>
+├── monitor.csv      <span class="c"># every training episode</span>
+├── tb/              <span class="c"># TensorBoard</span>
+├── model.zip        <span class="c"># agent at the end</span>
+├── best_model.zip   <span class="c"># best agent during training</span>
+└── eval.json        <span class="c"># 20 test episodes</span></pre>
+    <div class="col">
+      <div class="box orange"><h3>Evidence rule</h3><p class="small">Every number in your report must name the file it came from:</p><p class="small"><code>mean length 412 ± 55 (runs/q3_faulty/seed*/eval.json)</code></p><p class="small">No file → no marks. Never delete or edit run folders.</p></div>
+      <p class="small">We re-run your submitted agents on <b>your</b> variant — numbers must match.</p>
+    </div>
+  </div>
+</section>
+
+<section data-time="2 min" data-section="The parts">
+  <h2>Part 0 — Predictions first</h2>
+  <p>Before running experiments, answer 5 short questions on the VLE (due one week after release):</p>
+  <ul class="small">
+    <li>P1 Will your CartPole be easier or harder than the standard one?</li>
+    <li>P2 What happens to DQN without a target network? Without a replay buffer?</li>
+    <li>P3 What will your agent do on the robot with the late, weak motor?</li>
+    <li>P4 What will an agent learn with reward $-|x - x^*|$?</li>
+    <li>P5 Which varies more between seeds: DQN or DQN without a target network?</li>
+  </ul>
+  <div class="box green" style="margin-top:10px"><p class="small" style="margin:0"><b>Being wrong is fine</b> — you get the marks for a reasoned answer on time. In Part E you explain what surprised you. That's where the learning is.</p></div>
+</section>
+
+<section data-time="3 min">
+  <h2>Part A — Baseline (30)</h2>
+  <div class="row">
+    <div class="col" style="flex:1.35">
+      <ol class="steps">
+        <li>Train 3 agents with the default settings <span class="why">(≈ 5–10 min each)</span>
+<pre>python train.py --name q1_baseline --seeds 0 1 2</pre></li>
+        <li>Plot the 3 learning curves <span class="why">(A2, A4)</span>
+<pre>python plot_runs.py runs/q1_baseline -o figures/A_curves.png</pre></li>
+        <li>Test results for your table <span class="why">(A3)</span>: already done — <code>eval.json</code> in each <code>runs/q1_baseline/seed*/</code> folder</li>
+        <li>Video + trace of your best agent <span class="why">(A6; use your best seed instead of seed0)</span>
+<pre>python evaluate.py runs/q1_baseline/seed0 --video videos/A_best.mp4
+python evaluate.py runs/q1_baseline/seed0 --trace traces/A_seed0.csv</pre></li>
+      </ol>
+      <p class="small" style="margin-top:6px">Then explain: when does it first reach 500? Same for all seeds? Drops? Does the cart drift? Is the noisy observation still Markov?</p>
+    </div>
+    <div class="col" data-widget="seeds"></div>
+  </div>
+</section>
+
+<section data-time="2 min">
+  <h2>Part B — What makes DQN work? (22)</h2>
+  <p class="small" style="margin:0">Switch off each of the two tricks from Lecture 2 that made deep Q-learning stable:</p>
+  <div class="row" style="margin-top:8px">
+    <div class="col box"><h3>No target network</h3><p class="small" style="margin:0">The target network is always identical to the Q-network → the target moves with every update.</p></div>
+    <div class="col box"><h3>No replay buffer</h3><p class="small" style="margin:0">The buffer keeps only the last 32 transitions → every minibatch is consecutive, correlated steps.</p></div>
+  </div>
+  <ol class="steps" style="margin-top:12px">
+    <li>Train both broken versions, 3 seeds each
+<pre>python train.py --name q2_no_target --ablation no-target --seeds 0 1 2
+python train.py --name q2_no_replay --ablation no-replay --seeds 0 1 2</pre></li>
+    <li>One figure with all three <span class="why">(B1)</span>
+<pre>python plot_runs.py runs/q1_baseline runs/q2_no_target runs/q2_no_replay -o figures/B_ablation.png</pre></li>
+    <li>TensorBoard evidence, e.g. <code>train/loss</code> <span class="why">(B3)</span>: <code>tensorboard --logdir runs</code> · test results: each run's <code>eval.json</code> <span class="why">(B2)</span></li>
+  </ol>
+  <p class="small" style="margin-top:4px">Then explain <b>what happened and why</b>.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>Part C — The broken motor (22)</h2>
+  <p>Your faulty robot executes every command <b>3 or 4 steps late</b> and is weaker on one side (see your card).</p>
+  <div data-widget="delayline" class="widget"></div>
+  <ol class="small">
+    <li>How much worse are your baseline agents on the faulty robot? Watch the video: what goes wrong?</li>
+    <li>Retrain on the faulty robot. <b>Is $(x, \dot x, \theta, \dot\theta)$ still a Markov state?</b> What's missing?</li>
+    <li>Fix it: add the last K commands to the observation. Choose K and compare.</li>
+  </ol>
+</section>
+
+<section data-time="2 min">
+  <h2>Part C — what to run</h2>
+  <ol class="steps">
+    <li>Test your 3 baseline agents on the faulty robot <span class="why">(C1; repeat with seed1 and seed2 — the healthy-robot numbers are in Part A's eval.json)</span>
+<pre>python evaluate.py runs/q1_baseline/seed0 --faulty</pre></li>
+    <li>Video + trace of a baseline agent on the faulty robot <span class="why">(C2)</span>
+<pre>python evaluate.py runs/q1_baseline/seed0 --faulty --video videos/C_zeroshot.mp4 --trace traces/C_zeroshot.csv</pre></li>
+    <li>Train 3 new agents on the faulty robot <span class="why">(C3)</span>
+<pre>python train.py --name q3_faulty --faulty --seeds 0 1 2</pre></li>
+    <li>Think: is the observation still Markov? What is missing? <span class="why">(C4, no command)</span></li>
+    <li>Add the last K commands to the observation, then plot <span class="why">(C5; replace K by the number you chose)</span>
+<pre>python train.py --name q3_faulty_hist --faulty --action-history K --seeds 0 1 2
+python plot_runs.py runs/q1_baseline runs/q3_faulty runs/q3_faulty_hist -o figures/C_retrain.png</pre></li>
+  </ol>
+</section>
+
+<section data-time="2 min">
+  <h2>Part D — Design a reward (16)</h2>
+  <p class="small" style="margin:0">New goal: keep the pole up <b>and</b> keep the cart near your target $x^*$ (on your card). You may only change the reward.</p>
+  <ol class="steps">
+    <li>Train the given reward $r = -|x - x^*|$ and watch it <span class="why">(D1)</span>
+<pre>python train.py --name q4_naive --reward naive --seeds 0 1
+python evaluate.py runs/q4_naive/seed0 --video videos/D_naive.mp4</pre></li>
+    <li>Write your reward in <code>rl_assignment/rewards.py</code> (open it in any text editor), then train it and record a trace <span class="why">(D2)</span>
+<pre style="margin-bottom:4px"><span class="k">class</span> <span class="f">TargetPositionReward</span>(gym.RewardWrapper):
+    <span class="k">def</span> <span class="f">reward</span>(self, reward):
+        x, x_dot, theta, theta_dot = self.env.unwrapped.state
+        <span class="k">return</span> ...        <span class="c"># your idea here</span></pre>
+<pre>python train.py --name q4_target --reward target --seeds 0 1
+python evaluate.py runs/q4_target/seed0 --trace traces/D_target.csv</pre></li>
+    <li>Describe one reward that didn't work, or how an agent could cheat yours <span class="why">(D3)</span></li>
+  </ol>
+</section>
+
+<section data-time="2 min" data-section="Marking & rules">
+  <h2>What a good answer looks like</h2>
+  <div class="row">
+    <div class="col box red"><h3>Weak (≈ 1/5)</h3><p class="small">“The seeds behave differently because RL is random. DQN uses ε-greedy exploration, so different seeds explore differently, which leads to different results.”</p><p class="small muted">True, general, could be about anyone's run.</p></div>
+    <div class="col box green fragment"><h3>Strong (≈ 5/5)</h3><p class="small">“In Fig. A2, seed 2 first reaches 500 at ~70k steps, 30k later than seeds 0 and 1 (<code>runs/q1_baseline/seed*/monitor.csv</code>). TensorBoard shows ε already at 0.02 after 10k steps for all seeds, so seed 2 had little random exploration left while its Q-values were still poor; its episodes stayed short, so …”</p><p class="small muted">Specific, evidenced, uses the concept to explain <i>this</i> result.</p></div>
+  </div>
+  <p class="small" style="margin-top:14px">Short is fine. There are no marks for length. Max 8 pages.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>AI tools: allowed, with rules</h2>
+  <div class="row">
+    <div class="col box green"><h3>Fine</h3><ul class="small"><li>Fixing install errors, understanding error messages</li><li>Help with plotting code</li><li>Explaining a concept you're stuck on</li></ul></div>
+    <div class="col box orange"><h3>Required</h3><ul class="small"><li>Say what you used it for (Part E2)</li><li>Every explanation is about <b>your</b> results</li><li>You can explain everything you submit</li></ul></div>
+  </div>
+  <p style="margin-top:16px">An AI can write a fluent paragraph about DQN. It <b>can't</b> run your variant, watch your video, or explain <i>your</i> plots if we ask you about them. Those are where the marks are.</p>
+</section>
+
+<section data-time="2 min">
+  <h2>The oral: optional, no marks</h2>
+  <p>Only if we need to confirm that the work is your own, we may invite you to a short (≈ 10 min) chat with your laptop and repository open. We might:</p>
+  <div class="cards c3">
+    <div class="card"><div class="big">📈</div><h3>Explain a figure</h3><p>We pick one of your plots. Walk us through it.</p></div>
+    <div class="card"><div class="big">🔮</div><h3>Predict, then check</h3><p>We change one setting (γ, ε, …). You predict what happens, then we look.</p></div>
+    <div class="card"><div class="big">💬</div><h3>Concepts</h3><p>One or two questions linking your results to the lectures.</p></div>
+  </div>
+  <div class="box" style="margin-top:18px"><p class="small" style="margin:0">It's a conversation, not an exam, and it carries no marks of its own. If you ran the experiments and thought about them, you'll be fine. If you can't explain something in your report, marks for that part may be reduced.</p></div>
+</section>
+
+<section data-time="2 min">
+  <h2>Timeline &amp; help</h2>
+  <table class="t" style="width:100%;font-size:20px">
+    <tr><th class="l">When</th><th class="l">What</th></tr>
+    <tr><td class="l">Wed 25 Nov</td><td class="l">Released · install, <code>setup_student.py</code>, smoke test</td></tr>
+    <tr><td class="l">Wed 2 Dec</td><td class="l"><b>Part 0 predictions due</b> (VLE) · then Part A</td></tr>
+    <tr><td class="l">December</td><td class="l">Parts B and C</td></tr>
+    <tr><td class="l"><b>Fri 8 Jan 2027</b></td><td class="l"><b>Deadline</b>: Parts D and E · submit one ZIP on the VLE</td></tr>
+    <tr><td class="l">After the deadline</td><td class="l">Oral only if you are invited</td></tr>
+  </table>
+  <ul class="small" style="margin-top:14px">
+    <li>Stuck? Post the <b>full error text</b> (not a screenshot) on the VLE forum</li>
+    <li>Agent never reaches 500? That's a result — report it honestly and discuss it</li>
+    <li>High reward but the video looks wrong? Great observation — write about it</li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>
