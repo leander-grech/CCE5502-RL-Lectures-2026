@@ -26,7 +26,7 @@
 
 <section data-time="2 min" class="mm">
   <h2>Lecture 2 at a glance</h2>
-  <div data-widget="mindmap"><script type="application/json">{"center": ["Lecture 2", "RL Algorithms"], "branches": [{"label": "Planning (DP)", "leaves": [["Generalised PI", "How to improve a policy"], ["Policy evaluation", "Iterative policy evaluation"], ["Policy improvement", "Policy improvement", 2], ["Policy & value iteration", "Policy iteration and value iteration"]], "dark": true}, {"label": "Exploration", "leaves": [["Why Q instead of V", "Going model-free"], ["Bandits", "Exploration vs exploitation"], ["ε-greedy", "ε-greedy exploration"]]}, {"label": "MC & TD", "leaves": [["Monte-Carlo", "Monte-Carlo learning"], ["Temporal difference", "Temporal-Difference learning"], ["Bias vs variance", "MC vs TD: pros and cons"], ["Random walk", "Random walk"], ["A–B example", "What do they converge to", 2], ["Unified view · n-step", "A unified view of backups"]], "dark": true}, {"label": "Control", "leaves": [["SARSA (on-policy)", "SARSA: on-policy"], ["Off-policy learning", "Off-policy learning"], ["Q-learning", "Q-learning: off-policy"], ["Cliff walking", "Cliff walking"], ["One rule, many targets", "One update rule, different targets"]]}, {"label": "Deep Q-Networks", "leaves": [["Why tables don't scale", "Why tables don"], ["Function approx.", "Q-learning with function approximation"], ["Replay & target net", "DQN machinery"], ["CartPole", "CartPole"], ["Linear policy search", "What is the"], ["Gymnasium & SB3", "DQN with Stable-Baselines3"], ["Training curves", "Reading RL training curves"]]}, {"label": "Beyond DQN", "leaves": [["Value- vs policy-based", "Value-based vs policy-based"], ["Policy gradients", "Policy gradient"], ["PPO", "PPO"], ["Which algorithm when?", "Which algorithm when?"], ["Reward hacking", "Reward design and reward hacking"]]}]}</script></div>
+  <div data-widget="mindmap"><script type="application/json">{"center": ["Lecture 2", "RL Algorithms"], "branches": [{"label": "Planning (DP)", "leaves": [["Generalised PI", "How to improve a policy"], ["Policy evaluation", "Iterative policy evaluation"], ["Policy improvement", "Policy improvement", 2], ["Policy & value iteration", "Policy iteration and value iteration"]], "dark": true}, {"label": "Exploration", "leaves": [["Why Q instead of V", "Going model-free"], ["Bandits", "Exploration vs exploitation"], ["ε-greedy", "ε-greedy exploration"]]}, {"label": "MC & TD", "leaves": [["Monte-Carlo", "Monte-Carlo learning"], ["Temporal difference", "Temporal-Difference learning"], ["Bias vs variance", "MC vs TD: pros and cons"], ["Random walk", "Random walk"], ["Unified view", "A unified view of backups"]], "dark": true}, {"label": "Control", "leaves": [["SARSA (on-policy)", "SARSA: on-policy"], ["Off-policy learning", "Off-policy learning"], ["Q-learning", "Q-learning: off-policy"], ["Cliff walking", "Cliff walking"], ["One rule, many targets", "One update rule, different targets"]]}, {"label": "Deep Q-Networks", "leaves": [["Function approx.", "Q-learning with function approximation"], ["Replay & target net", "DQN machinery"], ["CartPole", "CartPole"], ["Linear policy search", "What is the"], ["Gymnasium & SB3", "DQN with Stable-Baselines3"], ["Training curves", "Reading RL training curves"]]}, {"label": "Beyond DQN", "leaves": [["Value- vs policy-based", "Value-based vs policy-based"], ["Policy gradients", "Policy gradient"], ["PPO", "PPO"], ["Reward hacking", "Reward design and reward hacking"], ["Which algorithm when?", "Which algorithm when?"]]}]}</script></div>
 </section>
 
 <section data-time="2 min">
@@ -52,6 +52,33 @@
         <li>Beyond DQN: policy gradients, PPO, reward design</li>
       </ol>
     </div>
+  </div>
+</section>
+
+<section data-time="2 min">
+  <h2>Key terms we'll use all lecture</h2>
+  <style>
+    .ktgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:14px; }
+    .kt { background:#fff; border:1px solid var(--faint); border-top:5px solid var(--accent); border-radius:10px; padding:14px 16px 16px; box-shadow:0 1px 3px rgba(0,0,0,.06); display:flex; flex-direction:column; gap:6px; }
+    .kt.v { border-top-color:var(--orange); } .kt.g { border-top-color:var(--green); }
+    .kt-h { font-size:14px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--accent); }
+    .kt.v .kt-h { color:var(--orange); } .kt.g .kt-h { color:var(--green); }
+    .kt-s { font-size:22px; min-height:36px; display:flex; align-items:center; white-space:nowrap; }
+    .kt-m { font-size:17px; line-height:1.35; color:var(--muted); }
+  </style>
+  <div class="ktgrid">
+    <div class="kt w"><div class="kt-h">State · action · reward</div><div class="kt-s">$s,\; a,\; r$</div><div class="kt-m">What the agent sees, does, and gets back each step.</div></div>
+    <div class="kt w"><div class="kt-h">Episode</div><div class="kt-s">$S_0, A_0, R_1, \dots, S_T$</div><div class="kt-m">One run from a start state to a terminal state.</div></div>
+    <div class="kt w"><div class="kt-h">Return</div><div class="kt-s">$G_t = R_{t+1} + \gamma R_{t+2} + \dots$</div><div class="kt-m">Total discounted reward from time $t$ on.</div></div>
+    <div class="kt w"><div class="kt-h">Discount</div><div class="kt-s">$\gamma \in [0, 1]$</div><div class="kt-m">How much the future counts. 0: only now · 1: everything equally.</div></div>
+    <div class="kt w"><div class="kt-h">Model</div><div class="kt-s">$\mathcal{P}^a_{ss'},\; \mathcal{R}^a_s$</div><div class="kt-m">How the world moves and pays out. Known → <b>plan</b> · unknown → <b>learn</b>.</div></div>
+    <div class="kt w"><div class="kt-h">Policy</div><div class="kt-s">$\pi(a \mid s)$</div><div class="kt-m">The agent's behaviour: probability of each action in each state.</div></div>
+    <div class="kt v"><div class="kt-h">State value</div><div class="kt-s">$v_\pi(s) = \mathbb{E}_\pi[G_t \mid S_t = s]$</div><div class="kt-m">How good a <b>state</b> is, if we follow $\pi$.</div></div>
+    <div class="kt v"><div class="kt-h">Action value</div><div class="kt-s">$q_\pi(s,a) = \mathbb{E}_\pi[G_t \mid s, a]$</div><div class="kt-m">How good an <b>action</b> is, then follow $\pi$.</div></div>
+    <div class="kt v"><div class="kt-h">Optimal values</div><div class="kt-s">$v_*,\; q_*$</div><div class="kt-m">The best achievable values, over all policies.</div></div>
+    <div class="kt v"><div class="kt-h">Bellman equation</div><div class="kt-s">$v = r + \gamma\, v'$</div><div class="kt-m">Value now = reward + $\gamma$ × value of where you land.</div></div>
+    <div class="kt g"><div class="kt-h">Greedy</div><div class="kt-s">$\arg\max_a q(s,a)$</div><div class="kt-m">Pick the action that looks best now. Greedy on $q_*$ is optimal.</div></div>
+    <div class="kt g"><div class="kt-h">Prediction vs control</div><div class="kt-s">evaluate&nbsp;$\pi$ &nbsp;·&nbsp; find best&nbsp;$\pi$</div><div class="kt-m"><b>Prediction</b>: how good is a <span style="white-space:nowrap">given $\pi$?</span> <b>Control</b>: find the best $\pi$.</div></div>
   </div>
 </section>
 
@@ -84,7 +111,7 @@
   <div class="eq">$\est{v_{k+1}(s)} = \sum_{a} \pi(a|s) \left( \rew{\mathcal{R}^a_s} + \gamma \sum_{s'} \mathcal{P}^a_{ss'}\, \nxt{v_k(s')} \right) \qquad \est{\mathbf{v}_{k+1}} = \rew{\mathcal{R}^\pi} + \gamma \mathcal{P}^\pi \nxt{\mathbf{v}_k}$</div>
   <div class="row">
     <ul class="col small">
-      <li>Start from $v_1 = 0$; iterate $v_1 \to v_2 \to \dots \to v_\pi$</li>
+      <li>Start from $v_0 = 0$; iterate $v_0 \to v_1 \to v_2 \to \dots \to v_\pi$</li>
       <li><b>Synchronous</b>: every state is updated in every sweep, from the previous sweep's numbers</li>
       <li>Needs the model $\mathcal{P}, \mathcal{R}$ → this is <i>planning</i></li>
     </ul>
@@ -101,10 +128,13 @@
     <div class="col-2" data-widget="dpgrid" data-preset="sutton"></div>
     <div class="col small">
       <p>Reward −1 per step, $\gamma = 1$, grey = terminal.</p>
-      <ol>
-        <li>Press <b>Evaluate: 1 sweep</b> a few times, watch $v_k$</li>
-        <li>Press <b>Improve π</b> after $k = 1, 2, 3$</li>
-      </ol>
+      <ul style="font-size:0.8em;padding-left:1.1em;margin:0.3em 0;line-height:1.35">
+        <li><b>Evaluate: 1 sweep</b><br>$v_{k+1}(s) = \sum_a \pi(a|s)\,\big(r + \gamma v_k(s')\big)$</li>
+        <li><b>Evaluate ⟳</b> repeat until converged<br>$v_k \to v_\pi \;\;(\max_s |\Delta v| < 10^{-3})$</li>
+        <li><b>Improve π</b><br>point each arrow at the best next state under the current $v$ <span class="muted">(ties split)</span></li>
+        <li><b>Reset</b> &nbsp;$v = 0$, π uniform random</li>
+      </ul>
+      <p style="font-size:0.88em">Try: 1 sweep a few times, then <b>Improve π</b> after $k = 1, 2, 3$.</p>
       <p class="muted">Greedy w.r.t. an <i>unfinished</i> $v_k$ is often already optimal!</p>
     </div>
   </div>
@@ -139,18 +169,8 @@
   <div class="box red" style="margin-top:14px"><p class="small" style="margin:0"><b>Two big problems with DP:</b> (1) needs the model $\mathcal{P}, \mathcal{R}$; (2) sweeps the entire state space. Real problems: unknown model, astronomically many states → <b>learn from sampled experience</b>.</p></div>
 </section>
 
-<section class="quiz" data-optional="1" data-time="2 min">
-  <h2>🧠 Quick check: planning</h2>
-  <div data-widget="quiztimer" data-seconds="30"></div>
-  <div class="quiz-list">
-    <div class="quiz-q"><div class="num">1</div><div class="body"><div class="qt">Policy <b>evaluation</b> or policy <b>improvement</b>: which one uses the Bellman <i>expectation</i> equation?</div><div class="ans fragment">Evaluation. Improvement is a greedy step: pick the action with the highest q.</div></div></div>
-    <div class="quiz-q"><div class="num">2</div><div class="body"><div class="qt">In value iteration, when do we get an explicit policy?</div><div class="ans fragment">Only at the end: act greedily with respect to the final values.</div></div></div>
-    <div class="quiz-q"><div class="num">3</div><div class="body"><div class="qt">Why can't we just use dynamic programming to play Atari?</div><div class="ans fragment">DP needs the model (P and R) and sweeps every state; Atari has an unknown model and astronomically many states.</div></div></div>
-  </div>
-</section>
-
 <!-- ============================================================ MODEL-FREE PREDICTION -->
-<section class="section" data-section="MC & TD">
+<section class="section" data-section="Exploration">
   <div class="kicker">Part 2</div>
   <h1>Learning from experience</h1>
   <p>No model. The agent only sees $S_t, A_t, R_{t+1}, S_{t+1}, \dots$ — can it still estimate values?</p>
@@ -199,7 +219,13 @@
       <p class="small muted" style="margin:0">$0.8 + 0.2/4 = 0.85$ &nbsp;·&nbsp; $0.2/4 = 0.05$</p>
     </div>
   </div>
-  <p class="small">In practice: <b>decay</b> ε over training (e.g. 1.0 → 0.05). That's DQN's <code>exploration_fraction</code>, which we'll see in code.</p>
+  <p class="small">In practice: <b>decay</b> ε over training (e.g. 1.0 → 0.02). That's DQN's <code>exploration_fraction</code>, which we'll see in code.</p>
+</section>
+
+<section class="section" data-section="MC & TD">
+  <div class="kicker">Part 3</div>
+  <h1>Monte-Carlo and TD learning</h1>
+  <p>Estimate $v_\pi$ from sampled episodes: wait for the real return (MC), or bootstrap from the next estimate (TD).</p>
 </section>
 
 <section data-time="2 min">
@@ -258,44 +284,9 @@
   <p class="small" style="margin:4px 0 0">True values $\tfrac16, \tfrac26, \dots, \tfrac56$ = probability of finishing on the right. <b>Question:</b> after 10 episodes, which estimate is closer to the black line, and why?</p>
 </section>
 
-<section data-optional="1" data-time="2 min">
-  <h2>What do they converge to? (the A–B example)</h2>
-  <div class="row">
-    <div class="col">
-      <p>Eight episodes of experience (γ = 1):</p>
-      <pre style="font-size:19px">A, 0, B, 0
-B, 1    B, 1    B, 1
-B, 1    B, 1    B, 1
-B, 0</pre>
-      <p class="small">$V(B) = 6/8 = 0.75$ for both methods. &nbsp;What is $V(A)$?</p>
-    </div>
-    <div class="col">
-      <div class="box orange fragment"><h3>Monte-Carlo: $V(A) = 0$</h3><p class="small">The only return seen from A was 0. MC minimises squared error on the <b>observed returns</b>.</p></div>
-      <div class="box blue fragment" style="margin-top:10px"><h3>TD(0): $V(A) = 0.75$</h3><p class="small">A always went to B, with reward 0. TD fits the <b>maximum-likelihood Markov model</b> and solves it (<i>certainty equivalence</i>).</p></div>
-    </div>
-  </div>
-</section>
-
 <section data-time="3 min">
   <h2>A unified view of backups</h2>
   <div data-widget="unified" class="widget"></div>
-</section>
-
-<section data-optional="1" data-time="2 min">
-  <h2>In between: n-step returns</h2>
-  <div data-widget="nstep" class="widget"></div>
-  <div class="eq" style="font-size:22px">$\est{V(S_t)} \leftarrow \est{V(S_t)} + \alpha \left( \tgt{G^{(n)}_t} - \est{V(S_t)} \right)$</div>
-  <div class="inwords sm"><b>n = how many <span class='c-rew'>real rewards</span> you wait for before trusting <span class='c-next'>your own estimate</span>.</b> Small n: quick updates, some bias. Large n: closer to the truth but noisier. n = 1 is TD(0); n = ∞ (to the end) is Monte-Carlo. <span class="muted">TD(λ) and PPO's GAE blend several n.</span></div>
-</section>
-
-<section class="quiz" data-optional="1" data-time="2 min">
-  <h2>🧠 Quick check: Monte-Carlo vs TD</h2>
-  <div data-widget="quiztimer" data-seconds="30"></div>
-  <div class="quiz-list">
-    <div class="quiz-q"><div class="num">1</div><div class="body"><div class="qt">You're halfway through an episode. Which method can already update its values?</div><div class="ans fragment">TD: it only needs one step, <span class='c-rew'>R</span> and <span class='c-next'>V(S′)</span>. MC must wait for the end.</div></div></div>
-    <div class="quiz-q"><div class="num">2</div><div class="body"><div class="qt">Which target is unbiased but noisy?</div><div class="ans fragment">Monte-Carlo's <span class='c-rew'>G<sub>t</sub></span>: it's the real return, but it depends on many random steps.</div></div></div>
-    <div class="quiz-q"><div class="num">3</div><div class="body"><div class="qt">Say the TD target in words.</div><div class="ans fragment"><span class='c-rew'>One real reward</span> + the discounted <span class='c-next'>estimate of the next state's value</span>.</div></div></div>
-  </div>
 </section>
 
 <section class="brk" data-section="Break">
@@ -305,7 +296,7 @@ B, 0</pre>
 
 <!-- ============================================================ CONTROL -->
 <section class="section" data-section="SARSA & Q-learning">
-  <div class="kicker">Part 3</div>
+  <div class="kicker">Part 4</div>
   <h1>Model-free control</h1>
   <p>Put TD inside the GPI loop: learn $Q(s,a)$, act ε-greedily, improve every step.</p>
 </section>
@@ -334,20 +325,6 @@ B, 0</pre>
   </div>
 </section>
 
-<section data-optional="1" data-time="1 min">
-  <h2>SARSA algorithm</h2>
-<pre><span class="c"># Q is a look-up table, initialised arbitrarily (Q(terminal, ·) = 0)</span>
-<span class="k">for</span> each episode:
-    S = env.reset()
-    A = epsilon_greedy(Q, S)
-    <span class="k">while</span> S <span class="k">is not</span> terminal:
-        S_next, R = env.step(A)
-        A_next = epsilon_greedy(Q, S_next)          <span class="c"># the action we WILL take</span>
-        <span class="c-est">Q[S, A]</span> += alpha * (<span class="c-rew">R</span> + gamma * <span class="c-next">Q[S_next, A_next]</span> - <span class="c-est">Q[S, A]</span>)
-        S, A = S_next, A_next</pre>
-  <p class="small" style="margin-top:14px">Converges to the optimal $q_*$ if every action keeps being tried in every state and ε is slowly reduced to 0 <span class="muted">(the "GLIE" condition), with a suitably decaying α</span>.</p>
-</section>
-
 <section data-time="4 min">
   <h2>SARSA, one update at a time</h2>
   <div data-widget="tdstep" data-algo="sarsa" class="widget"></div>
@@ -369,7 +346,7 @@ B, 0</pre>
   </ul>
 </section>
 
-<section data-time="3 min">
+<section data-time="2 min">
   <h2>Q-learning: off-policy TD control</h2>
   <ul class="small">
     <li>Behaviour policy $\mu$: ε-greedy w.r.t. $Q$ (explores)</li>
@@ -377,9 +354,6 @@ B, 0</pre>
   </ul>
   <div class="inwords sm"><span class='c-tgt'>Target</span> = <b><span class='c-rew'>reward</span> + <span class='c-next'>value of the best next action</span></b>, whatever I actually do next. It learns about acting greedily while behaving ε-greedily.</div>
   <div class="eq">$\est{Q(S,A)} \leftarrow \est{Q(S,A)} + \alpha \big( \rew{R} + \gamma\, \nxt{\max_{a'} Q(S', a')} - \est{Q(S,A)} \big)$</div>
-<pre>        S_next, R = env.step(A)
-        <span class="c-est">Q[S, A]</span> += alpha * (<span class="c-rew">R</span> + gamma * <span class="c-next">max(Q[S_next, :])</span> - <span class="c-est">Q[S, A]</span>)
-        S = S_next;  A = epsilon_greedy(Q, S)      <span class="c"># behaviour can be anything exploratory</span></pre>
   <div class="box green" style="margin-top:12px"><p class="small" style="margin:0"><b>Theorem:</b> Q-learning control converges to the optimal action-value function, $Q(s,a) \to q_*(s,a)$ (tabular, all pairs visited infinitely often).</p></div>
 </section>
 
@@ -420,19 +394,9 @@ B, 0</pre>
 
 <!-- ============================================================ DQN -->
 <section class="section" data-section="Deep Q-Networks">
-  <div class="kicker">Part 4</div>
+  <div class="kicker">Part 5</div>
   <h1>Deep Q-Networks</h1>
   <p>Replace the table with a neural network.</p>
-</section>
-
-<section data-optional="1" data-time="2 min">
-  <h2>Why tables don't scale</h2>
-  <div data-widget="curse" class="widget"></div>
-  <ul class="small" style="margin-top:14px">
-    <li>CartPole: 4 continuous variables → we'd have to discretise, and neighbouring cells learn nothing from each other</li>
-    <li>Atari: 84×84 pixels × 4 frames, 256 grey levels → $256^{28224}$ states</li>
-    <li>Solution: <b>function approximation</b> — generalise from seen states to similar unseen ones</li>
-  </ul>
 </section>
 
 <section data-time="2 min">
@@ -532,27 +496,6 @@ env.close()</pre>
   <div class="box orange" style="margin-top:12px"><p class="small" style="margin:0"><b>terminated</b> = reached a terminal state of the MDP (pole fell) → no future value. &nbsp;<b>truncated</b> = time limit hit → the future still exists, so the target should still <b>bootstrap</b>. Mixing them up is a classic bug.</p></div>
 </section>
 
-<section data-optional="1" data-time="1 min">
-  <h2>Writing your own environment</h2>
-<pre><span class="k">class</span> <span class="f">MyEnv</span>(gym.Env):
-    <span class="k">def</span> <span class="f">__init__</span>(self):
-        self.action_space = gym.spaces.Discrete(<span class="n">2</span>)
-        self.observation_space = gym.spaces.Box(-np.inf, np.inf, shape=(<span class="n">4</span>,), dtype=np.float32)
-
-    <span class="k">def</span> <span class="f">reset</span>(self, seed=<span class="k">None</span>, options=<span class="k">None</span>):
-        super().reset(seed=seed)                  <span class="c"># seeds self.np_random</span>
-        self.state = ...                          <span class="c"># initial state</span>
-        <span class="k">return</span> self.state, {}
-
-    <span class="k">def</span> <span class="f">step</span>(self, action):
-        self.state = ...                          <span class="c"># forward dynamics</span>
-        reward = ...                              <span class="c"># YOU design this — carefully!</span>
-        terminated = ...                          <span class="c"># MDP terminal state?</span>
-        truncated = <span class="k">False</span>                         <span class="c"># usually added by a TimeLimit wrapper</span>
-        <span class="k">return</span> self.state, reward, terminated, truncated, {}</pre>
-  <p class="small" style="margin-top:10px">Wrappers (<code>gym.Wrapper</code>, <code>RewardWrapper</code>, <code>ObservationWrapper</code>) let you modify an existing env without touching its code — you'll use these in the assignment.</p>
-</section>
-
 <section data-time="3 min">
   <h2>DQN with Stable-Baselines3</h2>
 <pre><span class="k">from</span> stable_baselines3 <span class="k">import</span> DQN
@@ -606,19 +549,9 @@ model.save(<span class="s">"dqn_cartpole"</span>)                          <span
   </div>
 </section>
 
-<section class="quiz" data-optional="1" data-time="2 min">
-  <h2>🧠 Quick check: DQN</h2>
-  <div data-widget="quiztimer" data-seconds="30"></div>
-  <div class="quiz-list">
-    <div class="quiz-q"><div class="num">1</div><div class="body"><div class="qt">What problem does the replay buffer solve?</div><div class="ans fragment">Consecutive transitions are highly correlated; sampling random past experience breaks the correlation (and reuses data).</div></div></div>
-    <div class="quiz-q"><div class="num">2</div><div class="body"><div class="qt">Why a separate, slowly-updated target network?</div><div class="ans fragment">So the <span class='c-tgt'>target</span> doesn't move every time the Q-network is updated (no dog chasing its tail).</div></div></div>
-    <div class="quiz-q"><div class="num">3</div><div class="body"><div class="qt">Your training reward hovers around 150, but evaluation gives 500. How?</div><div class="ans fragment">Training includes ε-exploration (random actions); evaluation is greedy. Also, the best checkpoint may be better than the latest.</div></div></div>
-  </div>
-</section>
-
 <!-- ============================================================ BEYOND DQN -->
 <section class="section" data-section="Beyond DQN">
-  <div class="kicker">Part 5</div>
+  <div class="kicker">Part 6</div>
   <h1>Beyond value-based RL</h1>
   <p>Learn the policy directly — the family behind PPO, robotics and LLM fine-tuning.</p>
 </section>
@@ -653,7 +586,13 @@ model.save(<span class="s">"dqn_cartpole"</span>)                          <span
   <div data-widget="ppoclip" class="widget"></div>
 </section>
 
-<section data-optional="1" data-time="1 min">
+<section data-time="4 min">
+  <h2>Reward design and reward hacking</h2>
+  <div data-widget="hack" class="widget"></div>
+  <p class="small">The agent optimises <b>exactly</b> what you reward. Famous real case: OpenAI's CoastRunners boat circled forever collecting respawning targets instead of finishing the race.</p>
+</section>
+
+<section data-time="1 min">
   <h2>Which algorithm when?</h2>
   <table class="t" style="width:100%;font-size:20px">
     <tr><th class="l">Algorithm</th><th class="l">Type</th><th class="l">Actions</th><th class="l">Typical use</th></tr>
@@ -663,12 +602,6 @@ model.save(<span class="s">"dqn_cartpole"</span>)                          <span
     <tr><td class="l"><b>GRPO</b> &amp; friends</td><td class="l">policy gradient, group baseline</td><td class="l">tokens</td><td class="l">training LLM “reasoning” on verifiable rewards</td></tr>
   </table>
   <p class="small" style="margin-top:14px">All of them are in (or built on) the same ideas from today: Bellman targets, bootstrapping, exploration, baselines/advantages, replay.</p>
-</section>
-
-<section data-time="4 min">
-  <h2>Reward design and reward hacking</h2>
-  <div data-widget="hack" class="widget"></div>
-  <p class="small">The agent optimises <b>exactly</b> what you reward. Famous real case: OpenAI's CoastRunners boat circled forever collecting respawning targets instead of finishing the race.</p>
 </section>
 
 <section data-time="2 min">
@@ -690,7 +623,7 @@ model.save(<span class="s">"dqn_cartpole"</span>)                          <span
     <li>You get a <b>personalised</b> variant of CartPole (physics and a faulty actuator generated from your student ID)</li>
     <li>Train DQN agents, run ablations (no replay? no target network?), stress-test robustness, and design a reward</li>
     <li>Submit code, logs, videos and a short report — the numbers must be reproducible from your submission</li>
-    <li><b>Oral discussion (10 min)</b>: you'll be asked to explain your own plots and make a small live change</li>
+    <li><b>Oral discussion (10 min)</b>: explain a figure from your report, predict what happens when we change one setting (e.g. $\gamma$ or $\varepsilon$), and link your results to the lectures</li>
   </ul>
   <div class="box orange" style="margin-top:12px"><p class="small" style="margin:0"><b>On AI tools:</b> you may use them — declare how. But the marks are for <i>your</i> understanding of <i>your</i> agents. A report you can't explain in the oral scores poorly, however well-written.</p></div>
 </section>

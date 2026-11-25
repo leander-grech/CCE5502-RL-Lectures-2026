@@ -43,9 +43,9 @@
     let G, view;
     const holder = el("div");
     const info = el("div", { class: "readout", style: { fontSize: "16px", minWidth: "260px" } });
-    const stepSl = U.slider({ label: "step reward", min: -1, max: 0, step: 0.01, value: preset === "sutton" ? -1 : -0.04, fmt: (v) => v.toFixed(2), oninput: (v) => { G.step = v; draw(); } });
-    const gSl = U.slider({ label: "γ", min: 0.5, max: 1, step: 0.01, value: preset === "sutton" ? 1 : 0.95, fmt: (v) => v.toFixed(2), oninput: (v) => { G.gamma = v; draw(); } });
-    const slipSl = U.slider({ label: "slip", min: 0, max: 0.6, step: 0.05, value: 0, fmt: (v) => v.toFixed(2), oninput: (v) => { G.slip = v; draw(); } });
+    const stepSl = U.slider({ label: "step reward", min: -1, max: 0, step: 0.01, value: preset === "sutton" ? -1 : -0.04, fmt: (v) => v.toFixed(2), oninput: (v) => { G.step = v; conv = false; draw(); } });
+    const gSl = U.slider({ label: "γ", min: 0.5, max: 1, step: 0.01, value: preset === "sutton" ? 1 : 0.95, fmt: (v) => v.toFixed(2), oninput: (v) => { G.gamma = v; conv = false; draw(); } });
+    const slipSl = U.slider({ label: "slip", min: 0, max: 0.6, step: 0.05, value: 0, fmt: (v) => v.toFixed(2), oninput: (v) => { G.slip = v; conv = false; draw(); } });
     let V, pi, k = 0, msg = "", running = null;
     function build() {
       if (preset === "sutton") {
@@ -64,8 +64,9 @@
       }
       G.slip = slipSl.get();
     }
-    function reset() { V = Array(G.n).fill(0); pi = G.randomPolicy(); k = 0; draw(); }
-    const evalOnce = () => { V = G.evalSweep(V, pi); k++; };
+    let conv = false;  // true once V = v_pi for the current pi (evaluation converged)
+    function reset() { V = Array(G.n).fill(0); pi = G.randomPolicy(); k = 0; conv = false; draw(); }
+    const evalOnce = () => { const old = V; V = G.evalSweep(V, pi); k++; conv = Math.max(...V.map((v, i) => Math.abs(v - old[i]))) < 1e-3; };
     function draw() {
       view.V = V; view.pi = pi; view.o.vmax = preset === "sutton" ? 22 : 10; view.draw();
       info.innerHTML = `sweeps k = <b>${k}</b><br>${msg}`;
@@ -73,8 +74,8 @@
     const acts = el("div", { class: "controls" },
       U.button("Evaluate: 1 sweep", () => { evalOnce(); msg = "v ← Bellman expectation backup (policy fixed)"; draw(); }, "primary"),
       U.button("Evaluate ⟳", () => { stopRun(); running = setInterval(() => { const old = V; evalOnce(); draw(); if (Math.max(...V.map((v, i) => Math.abs(v - old[i]))) < 1e-3 || k > 2000) { stopRun(); msg = "v<sub>π</sub> converged"; draw(); } }, 40); }),
-      U.button("Improve π (greedy)", () => { const old = JSON.stringify(pi.map((p) => p.map((x) => +x.toFixed(3)))); pi = G.greedy(V); const stable = old === JSON.stringify(pi.map((p) => p.map((x) => +x.toFixed(3)))); msg = stable ? "<span class='good'>policy stable → optimal!</span>" : "π ← greedy(v)"; draw(); }, "warn"),
-      U.button("Value iteration ⟳", () => { stopRun(); running = setInterval(() => { const old = V; V = G.viSweep(V); pi = G.greedy(V); k++; msg = "v ← max<sub>a</sub> backup"; draw(); if (Math.max(...V.map((v, i) => Math.abs(v - old[i]))) < 1e-3 || k > 500) { stopRun(); msg = "value iteration converged"; draw(); } }, 120); }),
+      U.button("Improve π (greedy)", () => { const old = JSON.stringify(pi.map((p) => p.map((x) => +x.toFixed(3)))); pi = G.greedy(V); const stable = old === JSON.stringify(pi.map((p) => p.map((x) => +x.toFixed(3)))); msg = stable && conv ? "<span class='good'>policy stable → optimal!</span>" : stable ? "π unchanged, but v is not v<sub>π</sub> yet: evaluate to confirm" : "π ← greedy(v)"; if (!stable) conv = false; draw(); }, "warn"),
+      preset === "sutton" ? null : U.button("Value iteration ⟳", () => { stopRun(); running = setInterval(() => { const old = V; V = G.viSweep(V); pi = G.greedy(V); k++; conv = false; msg = "v ← max<sub>a</sub> backup"; draw(); if (Math.max(...V.map((v, i) => Math.abs(v - old[i]))) < 1e-3 || k > 500) { stopRun(); conv = true; msg = "value iteration converged"; draw(); } }, 120); }),
       U.button("Reset", () => { stopRun(); msg = ""; reset(); }));
     const stopRun = () => { if (running) clearInterval(running); running = null; };
     const params = el("div", { class: "controls" }, ...(preset === "sutton" ? [] : [stepSl, gSl, slipSl, el("span", { class: "hint" }, "click cells to edit: wall → +10 → −10 → empty")]));
@@ -689,10 +690,10 @@
 
   // ================================================================ epsilon schedule (SB3 DQN)
   Deck.widget("epsched", (root) => {
-    const T = 100000;
+    const T = 50000;
     const plot = new U.Plot(root, 760, 260, { xlim: [0, T], ylim: [0, 1.05], xlabel: "timestep", ylabel: "ε (prob. random action)", xfmt: (v) => v / 1000 + "k", yticks: 5 });
     const f = U.slider({ label: "exploration_fraction", min: 0.01, max: 1, step: 0.01, value: 0.1, fmt: (v) => v.toFixed(2), oninput: draw });
-    const e1 = U.slider({ label: "exploration_final_eps", min: 0, max: 0.3, step: 0.01, value: 0.05, fmt: (v) => v.toFixed(2), oninput: draw });
+    const e1 = U.slider({ label: "exploration_final_eps", min: 0, max: 0.3, step: 0.01, value: 0.02, fmt: (v) => v.toFixed(2), oninput: draw });
     const ls = U.slider({ label: "learning_starts", min: 0, max: 20000, step: 500, value: 1000, oninput: draw });
     root.prepend(el("div", { class: "controls" }, f, e1, ls));
     function draw() {
